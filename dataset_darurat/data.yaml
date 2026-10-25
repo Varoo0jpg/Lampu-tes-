@@ -1,0 +1,14 @@
+path: D:/Coba/dataset_darurat      # sesuaikan dengan lokasi folder dataset Anda
+train: train/images
+val: valid/images
+test: test/images
+
+nc: 5
+names: ['Ambulance', 'Fire_truck', 'Normal_vehicle', 'Police_car', 'Towing_truck']
+
+roboflow:
+  workspace: s-workspace-kc9f0
+  project: fire-truck-ambulance-detection
+  version: 5
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/s-workspace-kc9f0/fire-truck-ambulance-detection/dataset/5
