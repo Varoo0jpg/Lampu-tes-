@@ -1,36 +1,34 @@
-# Fitur Pengenalan Suara Sirene
+# Pengenalan Suara Sirene — GUI Terintegrasi
 
-Fitur ini menambahkan deteksi suara **sirene** ke Smart Traffic Control System.
-Detektor menggunakan model audio YAMNet melalui MediaPipe dan mikrofon komputer.
+Fitur pengenalan audio telah digabungkan langsung ke `Coba_kamera.py`, bersama
+GUI dan deteksi kendaraan YOLO. Tidak diperlukan file Python sirene terpisah.
 
-## Instalasi
+## Input yang didukung
 
-Di lingkungan Python yang sama dengan aplikasi:
+- Kamera: sumber YouTube Live CCTV dikonfigurasi pada `SUMBER_KAMERA` di
+  `Coba_kamera.py` dan diakses melalui `yt-dlp`.
+- Audio mikrofon: pilih **Aktifkan Deteksi Sirene** di GUI.
+- Audio berkas: pilih **Pilih MP3/WAV untuk Uji** untuk menganalisis berkas
+  audio secara offline. Berkas audio diproses dalam potongan dan skor sirene
+  ditampilkan pada GUI.
+
+## Instalasi dependensi
+
+Jalankan di lingkungan Python proyek:
 
 ```bash
 python -m pip install -r requirements-sirine.txt
 ```
 
-Jalankan aplikasi seperti biasa. Tekan **Aktifkan Deteksi Sirine** untuk mulai
-menggunakan mikrofon. Saat pertama kali dijalankan, aplikasi mengunduh model
-YAMNet ke file `yamnet.tflite`; koneksi internet diperlukan hanya untuk
-pengunduhan awal.
+Pastikan dependensi aplikasi utama juga terpasang. Model YAMNet akan diunduh
+otomatis saat pertama kali deteksi audio dimulai; koneksi internet diperlukan
+untuk pengunduhan awal.
 
-## Cara kerja dan batasan
+## Batasan untuk evaluasi
 
-- Audio dianalisis pada potongan pendek secara berulang di thread terpisah.
-- Sirene dilaporkan setelah dua potongan berturut-turut melewati ambang skor.
-- Model mendeteksi kelas suara "Siren"; model ini **tidak membedakan ambulans,
-  polisi, dan pemadam kebakaran secara andal**.
-- Mikrofon tunggal tidak memberi informasi arah yang cukup untuk menentukan
-  lajur asal sirene. Setelah peringatan muncul, operator harus mengonfirmasi
-  arah/lajur secara visual dan menekan tombol **Prioritas Darurat** yang sesuai.
-- Fitur ini adalah prototipe penelitian, bukan sistem kendali lalu lintas siap
-  pakai. Uji dengan data rekaman berlabel dan lakukan pengawasan manusia.
-- Audio tidak disimpan oleh kode ini.
-
-## Evaluasi penelitian
-
-Uji pada kumpulan rekaman sirene dan suara non-sirene yang mencakup kebisingan
-lalu lintas. Catat precision, recall, F1-score, false alarm per menit, dan waktu
-deteksi. Pisahkan data latih/validasi/uji jika model dikembangkan lebih lanjut.
+YAMNet mengklasifikasikan kelas suara seperti "Siren"; hasilnya bukan identifikasi
+terverifikasi bahwa suara berasal dari ambulans, polisi, atau pemadam kebakaran.
+Gunakan berkas positif dan negatif berlabel untuk menghitung precision, recall,
+F1-score, false positive rate, dan latensi. Jangan menyimpulkan akurasi hanya
+dari satu atau dua contoh. Skor model bukan probabilitas terkalibrasi kecuali
+dikalibrasi melalui evaluasi tersendiri.
