@@ -358,6 +358,7 @@ class DetektorAudioSirine(threading.Thread):
 
             positif_berturut = 0
             alarm_terakhir = 0.0
+            alarm_terakhir_audio = -JEDA_ALARM
             indeks_chunk = 0
 
             with mp.tasks.audio.AudioClassifier.create_from_options(options) as classifier:
@@ -401,9 +402,15 @@ class DetektorAudioSirine(threading.Thread):
                         positif_berturut = 0
 
                     sekarang = time.monotonic()
-                    if (positif_berturut >= DETEKSI_BERTURUT
-                            and sekarang - alarm_terakhir >= JEDA_ALARM):
+                    waktu_audio = indeks_chunk * (UKURAN_CHUNK_SIRENE / SAMPLE_RATE_SIRENE)
+                    jeda_cukup = (
+                        waktu_audio - alarm_terakhir_audio >= JEDA_ALARM
+                        if self.mode == "berkas"
+                        else sekarang - alarm_terakhir >= JEDA_ALARM
+                    )
+                    if positif_berturut >= DETEKSI_BERTURUT and jeda_cukup:
                         alarm_terakhir = sekarang
+                        alarm_terakhir_audio = waktu_audio
                         positif_berturut = 0
                         self.kirim("sirene", skor=round(skor_sirene, 4),
                                    chunk=indeks_chunk, mode=self.mode,
@@ -767,11 +774,18 @@ class TrafficGUI(ctk.CTk):
                     print("[!] Deteksi sirene:", pesan)
                 elif jenis == "sirene":
                     skor = event.get("skor", 0.0)
-                    self.txt_sirine.configure(
-                        text=f"PERINGATAN SIRENE (skor {skor:.2f}) — konfirmasi arah",
-                        text_color="#ff6b6b"
-                    )
-                    self.buka_pilihan_lajur_darurat(skor)
+                    if event.get("mode") == "berkas":
+                        self.txt_sirine.configure(
+                            text=f"Kandidat sirene pada potongan {event.get('chunk', '?')} "
+                                 f"(skor {skor:.3f})",
+                            text_color="#ff6b6b"
+                        )
+                    else:
+                        self.txt_sirine.configure(
+                            text=f"PERINGATAN SIRENE (skor {skor:.2f}) — konfirmasi arah",
+                            text_color="#ff6b6b"
+                        )
+                        self.buka_pilihan_lajur_darurat(skor)
         except queue.Empty:
             pass
         if self.winfo_exists():
