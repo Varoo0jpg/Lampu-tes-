@@ -9,6 +9,7 @@
 #   [PERBAIKAN]  = bug pada kode asli yang diperbaiki
 import collections
 import os
+import queue
 import random
 import sys
 import threading
@@ -293,6 +294,10 @@ class TrafficGUI(ctk.CTk):
         self.gambar_kamera = {}
         self.jumlah_terakhir = {}
         self._lajur_gagal = set()
+        # [BARU] Antrean event agar thread audio tidak mengakses widget Tkinter langsung.
+        self._sirine_queue = queue.SimpleQueue()
+        self.detektor_sirine = None
+        self._popup_sirine = None
 
         # Konfigurasi Master Grid Layout
         self.grid_columnconfigure(0, weight=0, minsize=360)  # Kolom Kontrol Kiri
@@ -311,6 +316,7 @@ class TrafficGUI(ctk.CTk):
 
         # [BARU] Jalankan deteksi kamera
         self.mulai_deteksi()
+        self.after(250, self.poll_event_sirine)
         self.protocol("WM_DELETE_WINDOW", self.tutup_aplikasi)
 
         # Visualisasi awal status lampu
@@ -369,6 +375,19 @@ class TrafficGUI(ctk.CTk):
 
         self.btn_acak = ctk.CTkButton(panel_kiri, text="Acak Lajur Tanpa Kamera", fg_color="#2980b9", hover_color="#1f618d", command=self.action_acak_input_kendaraan)
         self.btn_acak.pack(fill="x", padx=15, pady=5)
+
+        # [BARU] Pengendali deteksi audio sirene (opt-in; memerlukan mikrofon).
+        self.btn_sirine = ctk.CTkButton(
+            panel_kiri, text="Aktifkan Deteksi Sirene",
+            fg_color="#8e44ad", hover_color="#6c3483",
+            command=self.toggle_deteksi_sirine
+        )
+        self.btn_sirine.pack(fill="x", padx=15, pady=5)
+        self.txt_sirine = ctk.CTkLabel(
+            panel_kiri, text="Sirene: belum aktif", font=("Arial", 10),
+            text_color="#bbbbbb", wraplength=300
+        )
+        self.txt_sirine.pack(fill="x", padx=15, pady=3)
 
     def bangun_grid_simulasi_kanan(self):
         """Membangun penempatan layout grid 4 kamera dan grafik suara."""
@@ -492,7 +511,127 @@ class TrafficGUI(ctk.CTk):
             self.after_cancel(self._id_ticker)
         if self.detektor is not None:
             self.detektor.stop()
+        if self.detektor_sirine is not None:
+            self.detektor_sirine.stop()
+        if self._popup_sirine is not None:
+            try:
+                self._popup_sirine.destroy()
+            except Exception:
+                pass
         self.destroy()
+
+
+    # -----------------------------------------------------------
+    # [BARU] INTEGRASI PENGENALAN SUARA SIRENE
+    # -----------------------------------------------------------
+    def toggle_deteksi_sirine(self):
+        """Mengaktifkan/menonaktifkan mikrofon tanpa memblokir GUI."""
+        if self.detektor_sirine is not None and self.detektor_sirine.is_alive():
+            self.detektor_sirine.stop()
+            self.detektor_sirine = None
+            self.btn_sirine.configure(text="Aktifkan Deteksi Sirene", fg_color="#8e44ad")
+            self.txt_sirine.configure(text="Sirene: dinonaktifkan", text_color="#bbbbbb")
+            return
+        try:
+            from deteksi_sirine import DetektorSirine
+            self.detektor_sirine = DetektorSirine(self._sirine_queue.put)
+            self.detektor_sirine.start()
+            self.btn_sirine.configure(text="Nonaktifkan Deteksi Sirene", fg_color="#c0392b")
+            self.txt_sirine.configure(text="Sirene: menyiapkan model dan mikrofon...", text_color="#f1c40f")
+        except Exception as exc:
+            self.txt_sirine.configure(text=f"Sirene: gagal dimulai ({exc})", text_color=HEX_RED)
+
+    def poll_event_sirine(self):
+        """Memproses hasil detektor di thread GUI utama."""
+        try:
+            while True:
+                event = self._sirine_queue.get_nowait()
+                jenis = event.get("jenis")
+                pesan = event.get("pesan", "")
+                if jenis == "status":
+                    warna = HEX_GREEN if "aktif" in pesan.lower() else "#bbbbbb"
+                    self.txt_sirine.configure(text=f"Sirene: {pesan}", text_color=warna)
+                elif jenis == "error":
+                    self.txt_sirine.configure(text=f"Sirene: {pesan}", text_color=HEX_RED)
+                    print("[!] Deteksi sirene:", pesan)
+                elif jenis == "sirene":
+                    skor = event.get("skor", 0.0)
+                    self.txt_sirine.configure(
+                        text=f"PERINGATAN SIRENE (skor {skor:.2f}) — konfirmasi arah",
+                        text_color="#ff6b6b"
+                    )
+                    self.buka_pilihan_lajur_darurat(skor)
+        except queue.Empty:
+            pass
+        if self.winfo_exists():
+            self.after(250, self.poll_event_sirine)
+
+    def buka_pilihan_lajur_darurat(self, skor):
+        """Operator mengonfirmasi lajur; satu mikrofon tidak bisa menentukan arah."""
+        if self._popup_sirine is not None:
+            try:
+                if self._popup_sirine.winfo_exists():
+                    self._popup_sirine.lift()
+                    return
+            except Exception:
+                self._popup_sirine = None
+
+        popup = ctk.CTkToplevel(self)
+        self._popup_sirine = popup
+        popup.title("Sirene terdeteksi")
+        popup.geometry("390x300")
+        popup.transient(self)
+        popup.grab_set()
+        ctk.CTkLabel(
+            popup, text=f"Sirene terdeteksi (skor model: {skor:.2f})",
+            font=("Arial", 15, "bold"), text_color="#ff6b6b"
+        ).pack(pady=(18, 6))
+        ctk.CTkLabel(
+            popup,
+            text=("Pilih lajur hanya setelah mengonfirmasi arah secara visual.\n"
+                  "Deteksi suara tidak menentukan jenis kendaraan atau arah."),
+            wraplength=350, justify="center"
+        ).pack(padx=12, pady=6)
+
+        wadah = ctk.CTkFrame(popup, fg_color="transparent")
+        wadah.pack(fill="x", padx=16, pady=8)
+        for lajur in DAFTAR_LAJUR:
+            ctk.CTkButton(
+                wadah, text=lajur, width=78,
+                command=lambda l=lajur: self.konfirmasi_lajur_darurat(l, popup)
+            ).pack(side="left", expand=True, padx=3)
+        ctk.CTkButton(
+            popup, text="Abaikan / belum terkonfirmasi",
+            fg_color="#555555", command=popup.destroy
+        ).pack(fill="x", padx=20, pady=(3, 12))
+
+    def konfirmasi_lajur_darurat(self, lajur, popup):
+        """Terapkan prioritas hanya setelah operator mengonfirmasi lajur."""
+        try:
+            popup.grab_release()
+            popup.destroy()
+        except Exception:
+            pass
+        self._popup_sirine = None
+        self.txt_sirine.configure(
+            text=f"Sirene dikonfirmasi: {lajur}. Prioritas operator dipilih.",
+            text_color="#f1c40f"
+        )
+        # Jika simulasi aktif, pindah melalui fase kuning; jangan langsung
+        # menyalakan dua lajur hijau sekaligus.
+        if self.simulasi_aktif:
+            self.var_mode.set("MANUAL")
+            if lajur == self.lajur_aktif and self.fase_saat_ini == "HIJAU":
+                return
+            self.lajur_terpaksa = lajur
+            self.fase_saat_ini = "KUNING"
+            self.hitung_mundur = FASE_KUNING
+            self.sinkronisasi_tampilan_ui()
+        else:
+            self.txt_sirine.configure(
+                text=f"Sirene dikonfirmasi: {lajur}. Mulai simulasi untuk menerapkan prioritas.",
+                text_color="#f1c40f"
+            )
 
     # -----------------------------------------------------------
     # ENGINE CORE SIMULATION LOGIC
