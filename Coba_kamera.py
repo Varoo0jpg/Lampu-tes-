@@ -541,6 +541,16 @@ class TrafficGUI(ctk.CTk):
             text_color="#bbbbbb", wraplength=300
         )
         self.txt_sirine.pack(fill="x", padx=15, pady=3)
+        self.btn_upload_audio = ctk.CTkButton(
+            panel_kiri, text="Pilih MP3/WAV untuk Uji",
+            fg_color="#34495e", hover_color="#2c3e50", command=self.pilih_audio_sirine
+        )
+        self.btn_upload_audio.pack(fill="x", padx=15, pady=(5, 2))
+        self.txt_audio = ctk.CTkLabel(
+            panel_kiri, text="Audio uji: belum dipilih", font=("Arial", 10),
+            text_color="#bbbbbb", wraplength=300
+        )
+        self.txt_audio.pack(fill="x", padx=15, pady=2)
 
     def bangun_grid_simulasi_kanan(self):
         """Membangun penempatan layout grid 4 kamera dan grafik suara."""
@@ -686,13 +696,45 @@ class TrafficGUI(ctk.CTk):
             self.txt_sirine.configure(text="Sirene: dinonaktifkan", text_color="#bbbbbb")
             return
         try:
-            from deteksi_sirine import DetektorSirine
-            self.detektor_sirine = DetektorSirine(self._sirine_queue.put)
+            self.detektor_sirine = DetektorAudioSirine(self._sirine_queue.put, mode="mikrofon")
             self.detektor_sirine.start()
             self.btn_sirine.configure(text="Nonaktifkan Deteksi Sirene", fg_color="#c0392b")
             self.txt_sirine.configure(text="Sirene: menyiapkan model dan mikrofon...", text_color="#f1c40f")
         except Exception as exc:
             self.txt_sirine.configure(text=f"Sirene: gagal dimulai ({exc})", text_color=HEX_RED)
+
+    def pilih_audio_sirine(self):
+        """Pilih berkas audio dan mulai analisis offline."""
+        path = filedialog.askopenfilename(
+            title="Pilih audio sirene atau audio pembanding",
+            filetypes=[
+                ("Berkas audio", "*.mp3 *.wav *.flac *.ogg *.m4a"),
+                ("Semua berkas", "*.*"),
+            ],
+        )
+        if not path:
+            return
+        self._path_audio_sirine = path
+        self.txt_audio.configure(
+            text=f"Audio uji: {os.path.basename(path)}", text_color="#5dade2"
+        )
+        if self.detektor_sirine is not None and self.detektor_sirine.is_alive():
+            self.detektor_sirine.stop()
+        try:
+            self.detektor_sirine = DetektorAudioSirine(
+                self._sirine_queue.put, mode="berkas", path_audio=path
+            )
+            self.detektor_sirine.start()
+            self.btn_sirine.configure(
+                text="Hentikan Analisis Audio", fg_color="#c0392b"
+            )
+            self.txt_sirine.configure(
+                text="Sirene: memulai analisis berkas...", text_color="#f1c40f"
+            )
+        except Exception as exc:
+            self.txt_sirine.configure(
+                text=f"Gagal memulai analisis: {exc}", text_color=HEX_RED
+            )
 
     def poll_event_sirine(self):
         """Memproses hasil detektor di thread GUI utama."""
@@ -704,6 +746,22 @@ class TrafficGUI(ctk.CTk):
                 if jenis == "status":
                     warna = HEX_GREEN if "aktif" in pesan.lower() else "#bbbbbb"
                     self.txt_sirine.configure(text=f"Sirene: {pesan}", text_color=warna)
+                elif jenis == "skor_audio":
+                    self._skor_audio_terakhir = event.get("skor", 0.0)
+                    self._jumlah_chunk_audio = event.get("chunk", self._jumlah_chunk_audio)
+                    self.txt_sirine.configure(
+                        text=f"Analisis audio: skor sirene {self._skor_audio_terakhir:.3f} "
+                             f"(potongan {self._jumlah_chunk_audio})",
+                        text_color="#5dade2"
+                    )
+                elif jenis == "selesai_audio":
+                    self.btn_sirine.configure(
+                        text="Aktifkan Deteksi Sirene", fg_color="#8e44ad"
+                    )
+                    self.txt_sirine.configure(
+                        text=f"Analisis selesai — {event.get('jumlah_chunk', 0)} potongan audio",
+                        text_color=HEX_GREEN
+                    )
                 elif jenis == "error":
                     self.txt_sirine.configure(text=f"Sirene: {pesan}", text_color=HEX_RED)
                     print("[!] Deteksi sirene:", pesan)
