@@ -87,17 +87,33 @@ BATAS_TUNGGU_MAKS = 180          # detik; lajur yang menunggu lebih lama dipaksa
 # [BARU] SUBSISTEM: DETEKSI KENDARAAN DARI KAMERA (THREAD)
 # ===============================================================
 def resolve_sumber(sumber):
-    """[BARU] Ubah link YouTube (live/video) menjadi URL stream langsung via yt-dlp.
-    Sumber lain (indeks kamera, file video, None) dikembalikan apa adanya."""
-    if isinstance(sumber, str) and ("youtube.com" in sumber or "youtu.be" in sumber):
-        import yt_dlp
-        # Audio tidak dipakai, jadi stream video-saja (bv*) juga boleh
-        opsi = {"quiet": True, "noplaylist": True,
-                "format": "bv*[height<=480]/b[height<=480]/bv*/b"}
-        with yt_dlp.YoutubeDL(opsi) as ydl:
-            info = ydl.extract_info(sumber, download=False)
-        return info["url"]
-    return sumber
+    """Resolve tautan YouTube menjadi URL media yang lebih kompatibel dengan FFmpeg."""
+    if not (isinstance(sumber, str) and
+            ("youtube.com" in sumber.lower() or "youtu.be" in sumber.lower())):
+        return sumber
+
+    import yt_dlp
+    opsi = {
+        "quiet": True,
+        "no_warnings": True,
+        "noplaylist": True,
+        "socket_timeout": 20,
+        # Utamakan format MP4 gabungan audio/video (lebih mudah dibuka OpenCV),
+        # lalu fallback ke format terbaik dengan batas resolusi.
+        "format": "best[ext=mp4][height<=720]/best[height<=720]/best",
+    }
+    with yt_dlp.YoutubeDL(opsi) as ydl:
+        info = ydl.extract_info(sumber, download=False)
+
+    # Format gabungan biasanya menyediakan url langsung. Bila extractor memberi
+    # requested_formats, ambil URL video yang benar-benar tersedia.
+    url = info.get("url")
+    if not url and info.get("requested_formats"):
+        url = next((f.get("url") for f in info["requested_formats"]
+                    if f.get("vcodec") != "none" and f.get("url")), None)
+    if not url:
+        raise RuntimeError("yt-dlp tidak menemukan URL video yang dapat dibuka")
+    return url
 
 
 class DetektorKamera(threading.Thread):
@@ -115,22 +131,45 @@ class DetektorKamera(threading.Thread):
         self._riwayat = {l: collections.deque(maxlen=5) for l in DAFTAR_LAJUR}
 
     def _buka_sumber(self):
+        """Buka setiap sumber; gunakan backend FFmpeg untuk URL streaming."""
         for lajur, sumber in SUMBER_KAMERA.items():
             if sumber is None:
                 continue
             try:
                 sumber_nyata = resolve_sumber(sumber)
             except Exception as e:
-                print(f"[!] Gagal membaca link YouTube lajur {lajur}: {e}")
+                print(f"[KAMERA:{lajur}] Gagal resolve sumber: {type(e).__name__}: {e}")
                 continue
-            if isinstance(sumber_nyata, int) and os.name == "nt":
-                cap = cv2.VideoCapture(sumber_nyata, cv2.CAP_DSHOW)
-            else:
-                cap = cv2.VideoCapture(sumber_nyata)
-            if cap.isOpened():
-                self.caps[lajur] = cap
-            else:
-                print(f"[!] Sumber lajur {lajur} ({sumber}) tidak terbuka")
+
+            cap = None
+            try:
+                if isinstance(sumber_nyata, int) and os.name == "nt":
+                    cap = cv2.VideoCapture(sumber_nyata, cv2.CAP_DSHOW)
+                elif isinstance(sumber_nyata, str) and sumber_nyata.lower().startswith(("http://", "https://")):
+                    # Timeout mencegah GUI/worker menunggu terlalu lama saat koneksi gagal.
+                    try:
+                        cap = cv2.VideoCapture(
+                            sumber_nyata, cv2.CAP_FFMPEG,
+                            [cv2.CAP_PROP_OPEN_TIMEOUT_MSEC, 15000,
+                             cv2.CAP_PROP_READ_TIMEOUT_MSEC, 10000]
+                        )
+                    except (TypeError, cv2.error):
+                        # Fallback untuk build OpenCV yang tidak mendukung parameter timeout.
+                        cap = cv2.VideoCapture(sumber_nyata, cv2.CAP_FFMPEG)
+                else:
+                    cap = cv2.VideoCapture(sumber_nyata)
+
+                if cap is not None and cap.isOpened():
+                    self.caps[lajur] = cap
+                    print(f"[KAMERA:{lajur}] Stream berhasil dibuka (backend={cap.getBackendName()})")
+                else:
+                    if cap is not None:
+                        cap.release()
+                    print(f"[KAMERA:{lajur}] OpenCV gagal membuka stream. Periksa FFmpeg/OpenCV, format stream, atau koneksi.")
+            except Exception as e:
+                if cap is not None:
+                    cap.release()
+                print(f"[KAMERA:{lajur}] Error saat membuka sumber: {type(e).__name__}: {e}")
 
     def run(self):
         try:
@@ -149,7 +188,13 @@ class DetektorKamera(threading.Thread):
             for lajur, cap in self.caps.items():
                 ok, img = cap.read()
                 if not ok:
-                    if isinstance(SUMBER_KAMERA[lajur], str):     # file video: ulang
+                    # Jangan seek ke frame 0 pada URL YouTube/live; itu bukan file lokal.
+                    # Pertahankan koneksi dan coba baca lagi pada iterasi berikutnya.
+                    sumber_asli = SUMBER_KAMERA.get(lajur)
+                    if isinstance(sumber_asli, str) and not (
+                        "youtube.com" in sumber_asli.lower() or "youtu.be" in sumber_asli.lower()
+                        or sumber_asli.lower().startswith(("http://", "https://"))
+                    ):
                         cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
                     continue
                 imgs[lajur] = cv2.resize(img, UKURAN_FRAME)
