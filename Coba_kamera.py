@@ -16,6 +16,7 @@ import threading
 import time
 
 import customtkinter as ctk
+from tkinter import filedialog
 import cv2
 import numpy as np
 from PIL import Image
@@ -268,6 +269,155 @@ class PanelInputLajur(ctk.CTkFrame):
 # ===============================================================
 # APLIKASI UTAMA: ENGINE GUI & CORE LOGIC SIMULATION
 # ===============================================================
+# ===============================================================
+# SUBSISTEM AUDIO SIRENE (TERINTEGRASI DALAM FILE GUI INI)
+# ===============================================================
+SAMPLE_RATE_SIRENE = 16000
+UKURAN_CHUNK_SIRENE = 15600  # sekitar 0,975 detik, ukuran input YAMNet
+AMBANG_SIRENE = 0.25
+DETEKSI_BERTURUT = 2
+JEDA_ALARM = 8.0
+MODEL_SIRENE_URL = (
+    "https://storage.googleapis.com/mediapipe-models/"
+    "audio_classifier/yamnet/float32/1/yamnet.tflite"
+)
+
+
+def siapkan_model_sirine():
+    """Unduh model YAMNet sekali saja, simpan di samping file Python."""
+    import urllib.request
+    path = resource_path("yamnet.tflite")
+    if not os.path.isfile(path):
+        sementara = path + ".download"
+        request = urllib.request.Request(
+            MODEL_SIRENE_URL, headers={"User-Agent": "LampuTes-SirenResearch/1.0"}
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=60) as response:
+                with open(sementara, "wb") as output:
+                    output.write(response.read())
+            os.replace(sementara, path)
+        finally:
+            if os.path.exists(sementara):
+                try:
+                    os.remove(sementara)
+                except OSError:
+                    pass
+    return path
+
+
+class DetektorAudioSirine(threading.Thread):
+    """Menganalisis mikrofon atau berkas audio di thread terpisah."""
+
+    def __init__(self, kirim_event, mode="mikrofon", path_audio=None):
+        super().__init__(daemon=True, name="DetektorAudioSirine")
+        self.kirim_event = kirim_event
+        self.mode = mode
+        self.path_audio = path_audio
+        self.running = True
+        self.stop_event = threading.Event()
+
+    def stop(self):
+        self.running = False
+        self.stop_event.set()
+
+    def kirim(self, jenis, **data):
+        try:
+            self.kirim_event({"jenis": jenis, **data})
+        except Exception:
+            pass
+
+    def run(self):
+        try:
+            import mediapipe as mp
+            import numpy as np
+
+            self.kirim("status", pesan="Memuat model audio YAMNet...")
+            model_path = siapkan_model_sirine()
+            options = mp.tasks.audio.AudioClassifierOptions(
+                base_options=mp.tasks.BaseOptions(model_asset_path=model_path),
+                max_results=10,
+                score_threshold=0.0,
+            )
+
+            audio_file = None
+            if self.mode == "berkas":
+                if not self.path_audio or not os.path.isfile(self.path_audio):
+                    raise ValueError("Berkas audio tidak ditemukan.")
+                import librosa
+                audio_file, _ = librosa.load(
+                    self.path_audio, sr=SAMPLE_RATE_SIRENE, mono=True
+                )
+                if len(audio_file) < UKURAN_CHUNK_SIRENE:
+                    raise ValueError("Audio terlalu pendek; minimal sekitar 1 detik.")
+                posisi = 0
+                self.kirim("status", pesan="Menganalisis berkas audio...")
+            else:
+                import sounddevice as sd
+                self.kirim("status", pesan="Mikrofon aktif — mendengarkan sirene...")
+
+            positif_berturut = 0
+            alarm_terakhir = 0.0
+            indeks_chunk = 0
+
+            with mp.tasks.audio.AudioClassifier.create_from_options(options) as classifier:
+                while self.running and not self.stop_event.is_set():
+                    if self.mode == "berkas":
+                        if posisi + UKURAN_CHUNK_SIRENE > len(audio_file):
+                            self.kirim("selesai_audio", pesan="Analisis berkas selesai.",
+                                       jumlah_chunk=indeks_chunk)
+                            break
+                        chunk = np.asarray(
+                            audio_file[posisi:posisi + UKURAN_CHUNK_SIRENE],
+                            dtype=np.float32,
+                        )
+                        posisi += UKURAN_CHUNK_SIRENE
+                    else:
+                        chunk = sd.rec(
+                            UKURAN_CHUNK_SIRENE, samplerate=SAMPLE_RATE_SIRENE,
+                            channels=1, dtype="float32", blocking=True,
+                        ).reshape(-1)
+                        if self.stop_event.is_set():
+                            break
+                        chunk = np.asarray(chunk, dtype=np.float32)
+
+                    indeks_chunk += 1
+                    audio_data = mp.tasks.audio.AudioData.create_from_array(
+                        chunk, SAMPLE_RATE_SIRENE
+                    )
+                    hasil = classifier.classify(audio_data)
+                    skor_sirene = 0.0
+                    for daftar in hasil.classifications:
+                        for kategori in daftar.categories:
+                            nama = (kategori.category_name or kategori.display_name or "").lower()
+                            if "siren" in nama or "emergency vehicle" in nama:
+                                skor_sirene = max(skor_sirene, float(kategori.score))
+
+                    self.kirim("skor_audio", skor=round(skor_sirene, 4),
+                               chunk=indeks_chunk, mode=self.mode)
+                    if skor_sirene >= AMBANG_SIRENE:
+                        positif_berturut += 1
+                    else:
+                        positif_berturut = 0
+
+                    sekarang = time.monotonic()
+                    if (positif_berturut >= DETEKSI_BERTURUT
+                            and sekarang - alarm_terakhir >= JEDA_ALARM):
+                        alarm_terakhir = sekarang
+                        positif_berturut = 0
+                        self.kirim("sirene", skor=round(skor_sirene, 4),
+                                   chunk=indeks_chunk, mode=self.mode,
+                                   pesan="Kandidat suara sirene terdeteksi.")
+
+            if self.stop_event.is_set():
+                self.kirim("status", pesan="Analisis audio dihentikan.")
+        except Exception as exc:
+            self.kirim("error", pesan=(
+                f"{exc}. Periksa dependensi MediaPipe, sounddevice untuk "
+                "mikrofon, atau librosa dan dukungan decoding MP3 untuk berkas."
+            ))
+
+
 class TrafficGUI(ctk.CTk):
     def __init__(self):
         super().__init__()
@@ -298,6 +448,9 @@ class TrafficGUI(ctk.CTk):
         self._sirine_queue = queue.SimpleQueue()
         self.detektor_sirine = None
         self._popup_sirine = None
+        self._path_audio_sirine = None
+        self._skor_audio_terakhir = 0.0
+        self._jumlah_chunk_audio = 0
 
         # Konfigurasi Master Grid Layout
         self.grid_columnconfigure(0, weight=0, minsize=360)  # Kolom Kontrol Kiri
