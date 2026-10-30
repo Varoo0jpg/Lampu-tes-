@@ -1,0 +1,2676 @@
+# Audit hasil training YOLO
+
+**Created:** 10/30/2026 12:13:34  
+**Updated:** 10/30/2026 13:02:26  
+**Exported:** 10/30/2026 13:09:40  
+**Link:** [https://claude.ai/chat/27afc2c0-58a6-410c-8809-088a9c66906b](https://claude.ai/chat/27afc2c0-58a6-410c-8809-088a9c66906b)  
+
+## User:
+
+> 10/30/2026 12:13:34
+
+````text
+# PROJECT CONTEXT RECOVERY — SMART TRAFFIC LIGHT
+## Cabang: Training V2 / Model 7 Kelas / Evaluasi CCTV
+
+Anda akan melanjutkan proyek **Smart Traffic Light berbasis YOLO, Python, OpenCV, dan CustomTkinter**. Bertindaklah sebagai AI engineer yang memahami computer vision, object detection, model training, evaluasi dataset, serta integrasi YOLO dengan aplikasi CCTV multi-camera.
+
+Jangan mengasumsikan pekerjaan sebelumnya belum dilakukan. Baca seluruh konteks berikut dan lanjutkan dari status terakhir.
+
+---
+
+# 1. TUJUAN PROYEK
+
+Proyek ini bertujuan membuat simulasi Smart Traffic Light menggunakan YOLO untuk mendeteksi kendaraan melalui empat kamera sekaligus.
+
+Aplikasi GUI memiliki fitur:
+- Empat tampilan kamera.
+- Deteksi kendaraan menggunakan YOLO.
+- Bounding box dan label kelas.
+- Penghitungan kendaraan.
+- Simulasi pengaturan lampu lalu lintas.
+- Integrasi hasil deteksi dengan logika sistem lampu lalu lintas.
+
+Fokus utama saat ini adalah memastikan model dapat mendeteksi kendaraan secara akurat dan konsisten, bukan sekadar menampilkan bounding box.
+
+---
+
+# 2. STRUKTUR DAN LOKASI PROYEK
+
+Terdapat beberapa cabang eksperimen. Jangan mencampur konfigurasi atau model antarcabang.
+
+## Lingkungan Training V2
+- Folder kerja GUI: `C:\Smart Traffic Light\Coba`
+- Python interpreter: `C:\Smart Traffic Light\.venv\Scripts\python.exe`
+- Model awal eksperimen: `runs\detect\smart_traffic...`
+- GUI sebelumnya: `Coba_kamera_2.py`
+
+## Eksperimen Model 7 Kelas
+- Dataset: `C:\MainMain\SmartTraffic_Final`
+- YAML: `C:\MainMain\SmartTraffic_Final\dataset.yaml`
+- Training script: `C:\MainMain\train_final.py`
+- Checkpoint transfer: `C:\MainMain\SmartTraffic_Final\checkpoint_7kelas_transfer.pt`
+- Output training: `C:\MainMain\SmartTraffic_Final\runs\smarttraffic_7kelas_v1`
+- Bobot hasil training: `best.pt`
+- Bobot yang telah disalin dan diganti nama: `ajasendiri.pt`
+
+Perhatikan bahwa lokasi proyek dan lingkungan Python bisa berbeda. Jangan mengasumsikan interpreter dari satu cabang dapat langsung digunakan di cabang lain tanpa pemeriksaan.
+
+---
+
+# 3. DATASET MODEL 7 KELAS
+
+Dataset terdiri dari:
+- Total gambar unik: 2.575
+- Total objek: 3.107
+- Train: 1.816 gambar
+- Validation: 512 gambar
+- Test: 247 gambar
+
+Audit sebelumnya menunjukkan:
+- Tidak ditemukan duplikasi lintas split.
+- Format anotasi telah diperiksa.
+- Tidak ditemukan ID kelas di luar rentang yang diperbolehkan pada audit final.
+- Dataset berasal dari Dataset 1 dan Dataset 3.
+- Dataset 2 dikeluarkan karena 100% duplikat Dataset 1.
+
+## Urutan kelas final
+
+| ID | Nama kelas |
+|---|---|
+| 0 | Ambulance |
+| 1 | Fire_Truck |
+| 2 | Car |
+| 3 | Motorcycle |
+| 4 | Police_Car |
+| 5 | Truck |
+| 6 | Bus |
+
+Urutan kelas wajib dipertahankan di semua konfigurasi model, YAML, GUI, dan evaluasi.
+
+---
+
+# 4. CHECKPOINT TRANSFER DAN TRAINING
+
+Checkpoint transfer berasal dari model original 8 kelas.
+
+Pemetaan:
+- Kelas 0–5 dipertahankan.
+- Kelas lama 7 (Bus) dipindahkan menjadi kelas baru 6.
+- Kelas lama 6 (Towing Truck) dihapus.
+
+Validasi checkpoint sebelumnya menunjukkan:
+- NC model = 7.
+- NC dataset = 7.
+- Urutan nama kelas sesuai.
+- Seluruh tiga level klasifikasi berhasil dipetakan.
+- Ukuran checkpoint sekitar 5,13 MB.
+
+Konfigurasi training:
+- Epoch: 50
+- Image size: 640
+- Batch: 4
+- Device: CPU
+- Workers: 0
+- Optimizer: SGD
+- Learning rate awal: 0.001
+- Cosine LR: aktif
+- Patience: 12
+- Close mosaic: 10
+
+Training telah selesai dan menghasilkan `best.pt`. File tersebut disalin dan diganti nama menjadi `ajasendiri.pt`.
+
+**PENTING:** Training selesai secara teknis, tetapi kualitas model belum dinyatakan berhasil. Belum ada evaluasi lengkap terhadap hasil training yang cukup untuk memastikan kualitasnya.
+
+---
+
+# 5. STATUS GUI GITHUB
+
+Repository:
+`Varoo0jpg/Lampiu`
+
+Branch:
+`main`
+
+File GUI baru:
+`Coba/coba_kamera_a.py`
+
+Link:
+https://github.com/Varoo0jpg/Lampiu/blob/main/Coba/coba_kamera_a.py
+
+Commit:
+`7ffcf03e7de8d45a745cf8b0c15d8e64e6334ca5`
+
+File dibuat dari GUI lama `Coba/Coba_kamera_2.py`, dengan penyesuaian minimal untuk model 7 kelas.
+
+Perubahan:
+- Model path: `ajasendiri.pt`
+- Pemetaan kelas YOLO menjadi tujuh kelas final.
+- Nama kelas dinormalisasi.
+- Bobot kendaraan disesuaikan.
+- Validator model disesuaikan untuk NC=7.
+- Referensi Towing Truck dan konfigurasi 8 kelas dihapus.
+
+Bagian yang dipertahankan:
+- Layout GUI.
+- Empat kamera.
+- Penghitungan kendaraan.
+- Simulasi lampu lalu lintas.
+- Struktur logika aplikasi.
+
+Confidence GUI dipertahankan pada 0.15.
+
+Catatan:
+- File GUI telah berhasil dibuat di GitHub.
+- Belum dilakukan verifikasi runtime menyeluruh menggunakan bobot lokal dan empat kamera.
+- `ajasendiri.pt` belum dipastikan tersedia di repository. Secara lokal, file harus berada di lokasi yang sesuai dengan `resource_path()` pada GUI.
+
+Jangan mengubah GUI secara besar-besaran sebelum sumber masalah model diketahui.
+
+---
+
+# 6. MASALAH YANG BARU DITEMUKAN
+
+Model 7 kelas telah diuji menggunakan sumber CCTV/live stream jalan raya.
+
+Hasil pengujian sangat buruk:
+
+1. Model tidak mendeteksi kendaraan pada sejumlah feed CCTV.
+2. Ketika terdapat truk berwarna merah yang bukan kendaraan pemadam kebakaran, model justru memberi label `Fire_Truck`.
+3. Satu kendaraan dapat menghasilkan lebih dari lima bounding box.
+4. Beberapa kotak tampak berlebihan dan saling bertumpuk.
+5. Model belum dapat digunakan secara andal untuk simulasi empat kamera.
+
+Masalah ini belum diketahui sumber pastinya.
+
+Ada kemungkinan:
+- Domain shift antara dataset training dan CCTV.
+- Generalisasi model buruk.
+- False positive klasifikasi.
+- Distribusi dataset kurang representatif.
+- Masalah preprocessing.
+- Masalah NMS.
+- Masalah inferensi atau rendering GUI.
+- Model mengalami overfitting atau underfitting.
+
+Jangan langsung menyimpulkan salah satu penyebab tanpa pengujian.
+
+---
+
+# 7. RIWAYAT MASALAH MODEL SEBELUMNYA
+
+Pada eksperimen model 8 kelas sebelumnya, pernah ditemukan kasus ketika inferensi langsung terhadap gambar `tes_motor.jpeg` menghasilkan lima prediksi `Fire_Truck` pada satu kendaraan, bahkan tanpa GUI.
+
+Ini menunjukkan bahwa gejala prediksi berulang dan salah klasifikasi pernah muncul pada tingkat model sebelumnya.
+
+Namun, jangan menganggap penyebab model 7 kelas pasti sama. Lakukan investigasi secara independen.
+
+---
+
+# 8. PEKERJAAN YANG HARUS DILAKUKAN SELANJUTNYA
+
+Prioritas sekarang adalah AUDIT KUALITAS MODEL `ajasendiri.pt`.
+
+Jangan langsung melakukan retraining.
+
+## Tahap 1 — Audit hasil training
+
+Periksa folder:
+
+`C:\MainMain\SmartTraffic_Final\runs\smarttraffic_7kelas_v1`
+
+Cari dan analisis:
+
+- `results.csv`
+- `confusion_matrix.png`
+- `confusion_matrix_normalized.png`
+- `BoxPR_curve.png`
+- `BoxF1_curve.png`
+- `BoxP_curve.png`
+- `BoxR_curve.png`
+- `args.yaml`
+- `weights\best.pt`
+- `weights\last.pt`
+
+Nama file aktual dapat berbeda. Periksa isi folder terlebih dahulu.
+
+Analisis:
+- Train loss.
+- Validation loss.
+- Precision.
+- Recall.
+- mAP50.
+- mAP50-95.
+- Performa per kelas.
+- Overfitting.
+- Underfitting.
+- Ketidakseimbangan kelas.
+- Kebingungan antara Fire_Truck dan Truck.
+
+Jangan hanya menilai berdasarkan mAP keseluruhan. Periksa performa setiap kelas.
+
+## Tahap 2 — Evaluasi model langsung tanpa GUI
+
+Gunakan interpreter Python yang sesuai dan model `ajasendiri.pt`.
+
+Uji pada:
+1. Gambar validation dataset.
+2. Gambar test dataset.
+3. Screenshot CCTV dengan truk merah.
+4. Screenshot CCTV dengan mobil.
+5. Screenshot CCTV dengan motor.
+6. Screenshot CCTV dengan kendaraan besar.
+
+Bandingkan hasilnya.
+
+Contoh inferensi:
+
+```python
+from ultralytics import YOLO
+
+model = YOLO("ajasendiri.pt")
+
+results = model.predict(
+    source="tes_cctv.jpg",
+    imgsz=640,
+    conf=0.10,
+    iou=0.45,
+    save=True,
+    save_txt=True
+)
+```
+
+Nilai confidence dan IoU tersebut hanya untuk diagnosis awal, bukan rekomendasi konfigurasi final.
+
+Periksa:
+- Jumlah prediksi.
+- Nama kelas.
+- Confidence setiap prediksi.
+- Koordinat bounding box.
+- Jumlah bounding box yang bertumpuk.
+- Apakah duplikasi masih terjadi di luar GUI.
+
+## Tahap 3 — Isolasi masalah NMS
+
+Jika inferensi langsung menghasilkan banyak kotak:
+- Periksa apakah NMS benar-benar berjalan.
+- Periksa konfigurasi `iou`.
+- Periksa class-aware NMS.
+- Periksa apakah ada pemanggilan NMS ganda atau hasil prediksi yang digabungkan.
+- Periksa apakah GUI menggambar hasil dari satu frame lebih dari sekali.
+- Periksa apakah kotak berasal dari kelas yang sama atau berbeda.
+
+Jangan asal memperbesar confidence threshold untuk menghilangkan kotak berlebihan.
+
+## Tahap 4 — Audit bias kelas Fire_Truck
+
+Investigasi kasus truk merah yang salah dilabeli Fire_Truck.
+
+Periksa:
+- Jumlah sampel Fire_Truck.
+- Jumlah sampel Truck.
+- Variasi warna pada masing-masing kelas.
+- Kondisi latar belakang.
+- Variasi bentuk dan tipe kendaraan.
+- Distribusi anotasi.
+- Apakah model terlalu bergantung pada warna merah.
+
+Gunakan visualisasi dataset dan prediksi untuk membuktikan apakah terdapat bias warna atau masalah representasi kelas.
+
+Jangan mengubah label dataset tanpa memeriksa anotasi asli.
+
+## Tahap 5 — Evaluasi domain shift CCTV
+
+Bandingkan karakteristik gambar dataset dan CCTV:
+- Sudut kamera.
+- Ketinggian kamera.
+- Ukuran kendaraan dalam piksel.
+- Perspektif.
+- Resolusi.
+- FPS.
+- Kompresi.
+- Pencahayaan.
+- Occlusion.
+- Kepadatan kendaraan.
+
+Tentukan apakah dataset perlu ditambah dengan gambar CCTV yang representatif dan anotasi yang benar.
+
+Jika perlu retraining, buat rencana yang terukur dan pertahankan test set yang independen.
+
+## Tahap 6 — Perbaikan GUI
+
+Setelah model terbukti bekerja pada inferensi langsung, baru evaluasi `coba_kamera_a.py`.
+
+Periksa:
+- Model path.
+- Mapping kelas.
+- Preprocessing.
+- Ukuran frame.
+- Konfigurasi confidence dan IoU.
+- Penanganan hasil YOLO.
+- Penggambaran bounding box.
+- Thread kamera.
+- Penghitungan kendaraan.
+- Integrasi empat kamera.
+
+Pertahankan desain dan fungsi GUI yang sudah ada. Hindari perubahan yang tidak berhubungan dengan sumber masalah.
+
+---
+
+# 9. PRINSIP KERJA
+
+Ikuti aturan berikut:
+
+1. Jangan mengarang hasil pengujian.
+2. Jangan menyatakan training berhasil hanya karena menghasilkan `best.pt`.
+3. Jangan menyatakan training gagal tanpa bukti evaluasi.
+4. Jangan langsung menyarankan retraining sebelum audit.
+5. Jangan mencampur eksperimen 8 kelas dengan model 7 kelas.
+6. Jangan mengubah urutan kelas.
+7. Jangan menghapus fitur GUI yang sudah berfungsi.
+8. Setiap perubahan kode harus memiliki alasan teknis.
+9. Berikan perintah CMD yang sesuai dengan Windows.
+10. Gunakan interpreter Python yang benar.
+11. Lakukan langkah secara bertahap dan tunggu hasil pengujian sebelum melanjutkan.
+12. Jika membutuhkan file, minta file yang spesifik dan jelaskan alasannya.
+13. Bedakan hasil yang sudah terverifikasi dari hipotesis.
+14. Jangan mengklaim kode sudah diuji jika baru ditulis atau disimpan.
+
+---
+
+# 10. INSTRUKSI PERTAMA UNTUK AI YANG MELANJUTKAN
+
+Mulailah dengan memahami seluruh konteks ini.
+
+Jangan langsung menulis kode atau melakukan retraining.
+
+Langkah pertama adalah meminta atau memeriksa hasil training pada folder:
+
+`C:\MainMain\SmartTraffic_Final\runs\smarttraffic_7kelas_v1`
+
+Fokus pada `results.csv`, confusion matrix, PR curve, F1 curve, serta bobot `best.pt`.
+
+Buat diagnosis objektif mengenai kualitas training dan tentukan apakah masalah utama berasal dari:
+- Model.
+- Dataset.
+- Domain shift CCTV.
+- NMS.
+- GUI.
+
+Tujuan akhirnya adalah menghasilkan model 7 kelas yang dapat mendeteksi Ambulance, Fire_Truck, Car, Motorcycle, Police_Car, Truck, dan Bus secara akurat pada empat kamera CCTV sekaligus.
+
+**Jangan mengejar sekadar munculnya bounding box. Prioritaskan akurasi klasifikasi, recall, precision, stabilitas deteksi, dan minimnya false positive.**
+````
+
+## Assistant:
+
+> 10/30/2026 12:13:46
+
+Konteks sudah saya baca. Saya mulai dari Tahap 1 (audit hasil training), sesuai instruksi pertama. Saya tidak punya akses ke folder `C:\MainMain\...` di komputer Anda, jadi belum ada hasil yang bisa saya nilai. Semua yang saya tulis di bawah adalah rencana, bukan temuan.
+
+## Yang saya butuhkan dari Anda
+
+Jalankan perintah ini di CMD untuk melihat isi folder hasil training:
+
+```
+dir "C:\MainMain\SmartTraffic_Final\runs\smarttraffic_7kelas_v1" /s /b
+```
+
+Lalu kirimkan:
+
+1. **Daftar file** dari perintah di atas. Nama file aktual bisa berbeda dari yang ada di dokumen, jadi ini perlu dicek dulu.
+2. **`results.csv`**, untuk melihat kurva loss, precision, recall, mAP50, dan mAP50-95 per epoch.
+3. **`confusion_matrix_normalized.png`**, untuk memeriksa kebingungan Fire_Truck vs Truck dan kelas yang sering jatuh ke background.
+4. **`BoxPR_curve.png`**, karena kurva ini memuat AP per kelas.
+5. **`args.yaml`**, untuk memastikan konfigurasi yang dipakai benar-benar sama dengan yang tercatat (epoch, imgsz, `data`, `pretrained`/`model`).
+6. Opsional: `BoxF1_curve.png`, plus label summary (`labels.jpg`) jika ada.
+
+## Perintah tambahan untuk data per kelas
+
+Hasil validasi per kelas yang lebih rinci bisa kita ambil langsung dari model. Ini sekaligus menguji `best.pt` pada validation dan test split. Jalankan dengan interpreter yang sesuai. Karena training berada di `C:\MainMain`, saya perlu memastikan dulu interpreter mana yang punya `ultralytics`:
+
+```
+C:\Smart Traffic Light\.venv\Scripts\python.exe -c "import ultralytics; print(ultralytics.__version__)"
+```
+
+Kirim outputnya. Kalau berhasil, langkah berikutnya adalah menjalankan `model.val()` untuk split `val` dan `test`, dengan hasil per kelas. Kalau gagal, kita periksa interpreter yang dipakai `train_final.py`.
+
+Satu hal lagi yang perlu dicek: hitung jumlah instance per kelas di train, val, dan test. Kalau Fire_Truck atau Ambulance hanya punya sedikit sampel (jumlah total objek hanya 3.107 untuk 7 kelas), hasil per kelas bisa tidak stabil. Skrip penghitungnya bisa saya tuliskan setelah Anda mengonfirmasi struktur folder label.
+
+## Hal yang akan saya periksa pada hasil Anda
+
+- **Overfitting/underfitting:** perbandingan train loss dan val loss, serta apakah mAP sudah plateau atau masih naik di epoch 50 (training hanya 50 epoch di CPU dengan lr 0.001, jadi underfitting sangat mungkin).
+- **Per kelas:** AP, precision, recall, dan jumlah sampel tiap kelas.
+- **Fire_Truck vs Truck:** nilai di off-diagonal confusion matrix.
+- **Early stopping:** apakah patience 12 memicu berhenti lebih awal, dan di epoch berapa `best.pt` terbaik.
+
+## Catatan awal (hipotesis, belum terverifikasi)
+
+Gejala ini bisa berasal dari lebih dari satu sumber sekaligus: model yang under-trained setelah transfer checkpoint, domain shift ke CCTV, dan bias warna pada Fire_Truck. Duplikasi lebih dari lima kotak pada satu kendaraan dengan `conf=0.15` juga bisa dipicu oleh model yang belum konvergen, bukan hanya masalah NMS. Semua itu baru bisa dipastikan setelah hasil di atas masuk dan inferensi langsung tanpa GUI diuji, jadi saya belum menyimpulkan apa pun.
+
+Silakan kirim hasil dari langkah pertama, dan kita lanjut dari sana.
+
+## User:
+
+> 10/30/2026 12:14:14
+
+Sekarang bagaimana?
+
+## Assistant:
+
+> 10/30/2026 12:14:23
+
+> Menyiapkan langkah berikutnya untuk pengguna.
+>
+> - Menyiapkan langkah berikutnya untuk pengguna.
+> - **Done**
+
+Sekarang giliran Anda menjalankan perintah di komputer Anda. Saya belum bisa melanjutkan audit karena belum ada hasil yang masuk. Berikut langkah paling singkat.
+
+## Langkah 1: lihat isi folder
+
+Buka CMD, lalu jalankan:
+
+```
+dir "C:\MainMain\SmartTraffic_Final\runs\smarttraffic_7kelas_v1" /s /b
+```
+
+Salin outputnya ke chat.
+
+## Langkah 2: ringkas results.csv otomatis
+
+Simpan kode ini sebagai `C:\MainMain\audit_results.py`. Kode ini saya tulis tetapi belum saya uji.
+
+```python
+import pandas as pd
+
+path = r"C:\MainMain\SmartTraffic_Final\runs\smarttraffic_7kelas_v1\results.csv"
+df = pd.read_csv(path)
+df.columns = [c.strip() for c in df.columns]
+
+print("Jumlah epoch tercatat:", len(df))
+cols = [c for c in df.columns if any(k in c for k in
+        ["epoch", "loss", "precision", "recall", "mAP"])]
+print(df[cols].iloc[[0, len(df)//4, len(df)//2, -5, -4, -3, -2, -1]].to_string())
+
+for m in ["metrics/mAP50(B)", "metrics/mAP50-95(B)"]:
+    if m in df.columns:
+        i = df[m].idxmax()
+        print(f"\nPuncak {m}: {df[m].max():.4f} pada epoch {int(df.loc[i, 'epoch'])}")
+```
+
+Jalankan dengan:
+
+```
+"C:\Smart Traffic Light\.venv\Scripts\python.exe" C:\MainMain\audit_results.py
+```
+
+Kalau muncul error `No module named pandas`, itu berarti interpreter tersebut bukan yang dipakai untuk training. Kirim saja pesan errornya, lalu kita cari interpreter yang benar.
+
+## Langkah 3: kirim gambar
+
+Kirim dua file ini sebagai gambar:
+- `confusion_matrix_normalized.png`
+- `BoxPR_curve.png`
+
+## Yang saya butuhkan dari Anda
+
+Cukup kirim:
+1. Output `dir`
+2. Output `audit_results.py` (atau pesan errornya)
+3. Dua gambar di atas
+
+Setelah itu saya akan mendiagnosis per kelas, termasuk kebingungan Fire_Truck vs Truck. Kita baru lanjut ke inferensi langsung dan NMS sesudahnya.
+
+## User:
+
+> 10/30/2026 12:15:02
+
+> File: results.csv
+
+![results.png](https://claude.ai/api/0f6d4a8e-5d50-428b-9248-e31b1d903cb3/files/9543fa45-9e58-4139-9a80-42946f582fea/preview)
+
+![BoxF1_curve.png](https://claude.ai/api/0f6d4a8e-5d50-428b-9248-e31b1d903cb3/files/b73de745-ed31-4d1d-a45e-c656167d1fc4/preview)
+
+![BoxP_curve.png](https://claude.ai/api/0f6d4a8e-5d50-428b-9248-e31b1d903cb3/files/f7bc9e3f-2624-49f4-b0fc-194f17c90cc6/preview)
+
+![BoxPR_curve.png](https://claude.ai/api/0f6d4a8e-5d50-428b-9248-e31b1d903cb3/files/ae5d71e6-dcde-4ac6-9564-281444a0067d/preview)
+
+![BoxR_curve.png](https://claude.ai/api/0f6d4a8e-5d50-428b-9248-e31b1d903cb3/files/84f7ed44-dd68-411a-a4fd-9c1634ca789d/preview)
+
+![confusion_matrix.png](https://claude.ai/api/0f6d4a8e-5d50-428b-9248-e31b1d903cb3/files/4519e752-e9da-45a8-8d69-4c874ed0cdda/preview)
+
+![confusion_matrix_normalized.png](https://claude.ai/api/0f6d4a8e-5d50-428b-9248-e31b1d903cb3/files/3554bba6-6098-4a73-95fc-91705bb3db16/preview)
+
+![labels.jpg](https://claude.ai/api/0f6d4a8e-5d50-428b-9248-e31b1d903cb3/files/3419eb30-7709-46e5-b9ba-cd2758b073f6/preview)
+
+ini hasil training sebelumnya dulu
+
+## Assistant:
+
+> 10/30/2026 12:15:54
+
+> Memeriksa ukuran objek pada data latih.
+>
+> - Memeriksa ukuran objek pada data latih.
+> - **Done**
+
+Saya sudah memeriksa semua gambar. Angka di bawah dibaca dari grafik, jadi bersifat perkiraan. Saya belum membuka `results.csv` secara numerik.
+
+## Diagnosis: model ini belum layak pakai
+
+Training selesai secara teknis, tetapi hasilnya sangat rendah:
+
+- mAP50 keseluruhan hanya **0,095** (kurva PR), dengan mAP50-95 sekitar 0,03. Nilai yang sehat untuk deteksi kendaraan ada di kisaran 0,5 ke atas.
+- F1 terbaik semua kelas hanya **0,09** (pada conf 0,395).
+- Recall di grafik training sekitar 0,13 sampai 0,17.
+- Presisi tinggi (sekitar 0,65) tidak berarti baik. Nilai itu dihitung dari sedikit deteksi yang lolos pada recall yang sangat rendah.
+
+## Per kelas (AP50 dari kurva PR)
+
+| Kelas | AP50 | Jumlah instance train |
+|---|---|---|
+| Police_Car | 0,398 | 687 |
+| Fire_Truck | 0,161 | 436 |
+| Ambulance | 0,107 | 321 |
+| Car | 0,002 | 457 |
+| Motorcycle | 0,000 | 101 |
+| Truck | 0,000 | 96 |
+| Bus | 0,000 | 99 |
+
+Empat kelas praktis tidak dipelajari sama sekali, dan itu justru kelas kendaraan umum yang paling dibutuhkan simulasi lalu lintas. Car punya 457 instance (hampir sama dengan Fire_Truck) tetapi AP-nya 0,002. Jadi jumlah sampel saja tidak menjelaskan semuanya, dan ada hal lain yang perlu dicari.
+
+## Temuan penting
+
+**1. Underfitting, bukan overfitting.** Train dan val loss sama-sama turun terus sampai epoch 50, dan tidak ada celah yang melebar di antara keduanya. mAP50 mulai mendatar dan berosilasi sejak sekitar epoch 35 sampai 40 (puncak di sekitar epoch 43). Lonjakan train cls_loss di epoch 41 hampir pasti akibat `close_mosaic=10` (mosaic dimatikan), jadi itu normal.
+
+**2. Loss awal sangat tinggi.** Val cls_loss mulai dari sekitar 39 dan train cls_loss dari sekitar 13. Itu mengindikasikan checkpoint transfer 8 kelas tidak memberikan awalan yang bagus. Ini hipotesis, belum terbukti.
+
+**3. Fire_Truck memang mengambil banyak tebakan salah.** Dari kurva presisi, presisi Fire_Truck pada conf 0,15 hanya sekitar 0,08 sampai 0,1, dan pada conf 0,8 masih sekitar 0,3. Artinya sebagian besar deteksi Fire_Truck salah, bahkan pada confidence tinggi. Ini cocok dengan gejala truk merah yang dilabeli Fire_Truck. Di confusion matrix ternormalisasi, baris Fire_Truck juga menyerap Ambulance (0,39), Motorcycle (0,26), dan Bus (0,26). Baris Police_Car menyerap Motorcycle (0,61), Truck (0,43), dan Bus (0,43). Model cenderung membuang kebingungannya ke dua kelas itu. Catatan: confusion matrix saat validasi dihitung pada conf sangat rendah, jadi jumlah background yang besar (misalnya 70.795 di Police_Car) memang membesar-besarkan false positive. Itu tidak mewakili kondisi pada conf 0,15.
+
+**4. Dataset kemungkinan besar bukan domain CCTV.** Di `labels.jpg`, sebagian besar kotak berukuran besar (lebar dan tinggi 0,6 sampai 1,0 dari gambar) dan pusatnya menumpuk di sekitar tengah gambar (x 0,5, y 0,5). Itu khas foto jarak dekat dengan satu kendaraan di tengah, sedangkan CCTV berisi kendaraan kecil dan tersebar. Ini bukti dari sisi dataset. Ukuran kendaraan di CCTV Anda belum saya ukur, jadi perbandingannya belum lengkap.
+
+**5. Val set sangat kecil per kelas.** Dari confusion matrix, saya hitung sekitar 23 Motorcycle, 23 Bus, dan 30 Truck di validasi. Angka per kelas tidak stabil, dan itu memperkuat alasan perlu data tambahan.
+
+**6. Kolom loss tidak biasa.** Training Anda memakai `l1_loss` dan tidak ada `dfl_loss`, padahal YOLOv8 dan YOLO11 biasanya punya `dfl_loss`. Ukuran checkpoint 5,13 MB juga menunjukkan model berukuran nano. Bisa jadi arsitekturnya berbeda dari YOLOv8, misalnya model end-to-end tanpa NMS klasik. Kalau benar, pengaturan `iou` mungkin tidak berpengaruh seperti dugaan di Tahap 3, dan kotak berlebih bisa punya sebab lain. Ini baru dugaan, belum terverifikasi.
+
+## Kesimpulan sementara
+
+- **Verifikasi:** hasil training sendiri sudah menunjukkan model buruk, bahkan pada validation set sendiri. Jadi masalah utamanya ada di tingkat model dan data, bukan GUI.
+- **Hipotesis:** NMS dan rendering GUI mungkin ikut berperan pada kotak berlebih, tetapi itu belum bisa dinilai sebelum inferensi langsung, karena model yang lemah sendiri sudah cukup untuk menghasilkan banyak kotak pada conf 0,15.
+- **Belum diputuskan:** apakah perlu retraining. Saya ingin cek dulu arsitektur dan hasil val/test per kelas.
+
+## Langkah berikutnya
+
+Tolong jalankan dan kirim hasilnya:
+
+**A. Isi `args.yaml`** dari folder training (di sana tercatat `model`, `pretrained`, `data`, dan seluruh hyperparameter).
+
+**B. Identitas model:**
+
+```
+"C:\Smart Traffic Light\.venv\Scripts\python.exe" -c "from ultralytics import YOLO; m=YOLO(r'C:\MainMain\SmartTraffic_Final\runs\smarttraffic_7kelas_v1\weights\best.pt'); print(m.task, type(m.model).__name__); print(m.names); m.info()"
+```
+
+**C. Evaluasi per kelas di val dan test.** Simpan sebagai `C:\MainMain\eval_split.py` (belum saya uji):
+
+```python
+from ultralytics import YOLO
+
+W = r"C:\MainMain\SmartTraffic_Final\runs\smarttraffic_7kelas_v1\weights\best.pt"
+Y = r"C:\MainMain\SmartTraffic_Final\dataset.yaml"
+m = YOLO(W)
+
+for split in ["val", "test"]:
+    r = m.val(data=Y, split=split, imgsz=640, batch=4, device="cpu", workers=0, plots=False)
+    print(f"\n=== {split} ===")
+    print("mAP50:", round(r.box.map50, 4), "mAP50-95:", round(r.box.map, 4))
+    for i, n in r.names.items():
+        print(f"{n:12s} P={r.box.p[i]:.3f} R={r.box.r[i]:.3f} AP50={r.box.ap50[i]:.3f}")
+```
+
+Jalankan dengan:
+
+```
+"C:\Smart Traffic Light\.venv\Scripts\python.exe" C:\MainMain\eval_split.py
+```
+
+Jika `ultralytics` tidak ditemukan, kirim pesan errornya dan kita cari interpreter yang dipakai `train_final.py`.
+
+Setelah itu, satu screenshot CCTV dan satu gambar dari val set yang diprediksi langsung (tanpa GUI) akan membantu memisahkan masalah model dari masalah NMS.
+
+## User:
+
+> 10/30/2026 12:18:32
+
+A
+
+```yaml
+task: detect
+mode: train
+model: C:\MainMain\SmartTraffic_Final\checkpoint_7kelas_transfer.pt
+data: C:\MainMain\SmartTraffic_Final\dataset.yaml
+epochs: 50
+time: null
+patience: 12
+batch: 4
+imgsz: 640
+save: true
+save_period: 5
+cache: false
+device: cpu
+workers: 0
+project: C:\MainMain\SmartTraffic_Final\runs
+name: smarttraffic_7kelas_v1
+exist_ok: false
+pretrained: false
+cls_remap: true
+optimizer: SGD
+verbose: true
+seed: 42
+deterministic: true
+single_cls: false
+rect: false
+cos_lr: true
+close_mosaic: 10
+resume: false
+amp: false
+fraction: 1.0
+profile: false
+freeze: null
+multi_scale: 0.0
+compile: false
+channels_last: null
+overlap_mask: true
+mask_ratio: 4
+dropout: 0.0
+val: true
+split: val
+save_json: false
+conf: null
+iou: 0.7
+max_det: 300
+quantize: null
+dnn: false
+plots: true
+nms: null
+source: null
+vid_stride: 1
+stream_buffer: false
+visualize: false
+augment: false
+agnostic_nms: false
+classes: null
+retina_masks: false
+embed: null
+show: false
+save_frames: false
+save_txt: false
+save_conf: false
+save_crop: false
+show_labels: true
+show_conf: true
+show_boxes: true
+line_width: null
+format: torchscript
+optimize: false
+dynamic: false
+simplify: true
+opset: null
+workspace: null
+lr0: 0.001
+lrf: 0.01
+momentum: 0.937
+weight_decay: 0.0005
+warmup_epochs: 3
+warmup_momentum: 0.8
+warmup_bias_lr: 0.1
+distill_model: null
+dis: 6.0
+box: 7.5
+cls: 0.5
+cls_pw: 0.0
+dfl: 1.5
+pose: 12.0
+kobj: 1.0
+rle: 1.0
+angle: 1.0
+dlog: 1.0
+dgrad: 0.5
+dlam: 1.0
+nbs: 64
+hsv_h: 0.015
+hsv_s: 0.7
+hsv_v: 0.4
+degrees: 0.0
+translate: 0.1
+scale: 0.5
+shear: 0.0
+perspective: 0.0
+flipud: 0.0
+fliplr: 0.5
+bgr: 0.0
+mosaic: 1.0
+mixup: 0.0
+cutmix: 0.0
+copy_paste: 0.0
+copy_paste_mode: flip
+auto_augment: randaugment
+erasing: 0.4
+cfg: null
+tracker: tracktrack.yaml
+save_dir: C:\MainMain\SmartTraffic_Final\runs\smarttraffic_7kelas_v1
+```
+
+B
+detect DetectionModel
+{0: 'Ambulance', 1: 'Fire_Truck', 2: 'Car', 3: 'Motorcycle', 4: 'Police_Car', 5: 'Truck', 6: 'Bus'}
+model_7kelas summary: 260 layers, 2,506,530 parameters, 0 gradients, 5.9 GFLOPs
+
+C
+Ultralytics 8.4.189  Python-3.12.4 torch-2.14.1+cpu CPU (12th Gen Intel Core i5-12400)
+model_7kelas summary (fused): 120 layers, 2,376,201 parameters, 0 gradients, 5.3 GFLOPs
+val: Fast image access  (ping: 0.1±0.1 ms, read: 98.6±18.8 MB/s, size: 49.8 KB)
+val: Scanning C:\MainMain\SmartTraffic_Final\labels\valid.cache... 512 images, 82 bac…: 100% ━━━━━━━━━━━━ 512/512  0.0s
+                 Class     Images  Instances      Box(P          R      mAP50…: 100% ━━━━━━━━━━━━ 128/128 6.6it/s 19.5s
+                   all        512        610      0.814      0.113     0.0954     0.0345
+             Ambulance         83         96          1          0      0.107     0.0274
+            Fire_Truck        113        129      0.124      0.481      0.161     0.0552
+                   Car         45        119          1          0    0.00225   0.000732
+            Motorcycle         21         23          1          0   0.000133   1.33e-05
+            Police_Car        135        190      0.573      0.311      0.398      0.158
+                 Truck         19         30          1          0   0.000372   4.28e-05
+                   Bus         15         23          1          0          0          0
+Speed: 0.6ms preprocess, 24.6ms inference, 0.0ms loss, 5.9ms postprocess per image
+
+=== val ===
+mAP50: 0.0954 mAP50-95: 0.0345
+Ambulance    P=1.000 R=0.000 AP50=0.107
+Fire_Truck   P=0.124 R=0.481 AP50=0.161
+Car          P=1.000 R=0.000 AP50=0.002
+Motorcycle   P=1.000 R=0.000 AP50=0.000
+Police_Car   P=0.573 R=0.311 AP50=0.398
+Truck        P=1.000 R=0.000 AP50=0.000
+Bus          P=1.000 R=0.000 AP50=0.000
+Ultralytics 8.4.189  Python-3.12.4 torch-2.14.1+cpu CPU (12th Gen Intel Core i5-12400)
+model_7kelas summary (fused): 120 layers, 2,376,201 parameters, 0 gradients, 5.3 GFLOPs
+val: Fast image access  (ping: 0.2±0.2 ms, read: 115.4±33.8 MB/s, size: 62.5 KB)
+val: Scanning C:\MainMain\SmartTraffic_Final\labels\test... 247 images, 40 ba…: 100% ━━━━━━━━━━━━ 247/247 1.1Kit/s 0.2s
+val: New cache created: C:\MainMain\SmartTraffic_Final\labels\test.cache
+                 Class     Images  Instances      Box(P          R      mAP50  m…: 100% ━━━━━━━━━━━━ 62/62 7.1it/s 8.7s
+                   all        247        300       0.76      0.156     0.0999      0.038
+             Ambulance         37         39      0.821     0.0256      0.121     0.0441
+            Fire_Truck         45         49      0.129      0.694      0.252     0.0886
+                   Car         30         75          1          0    0.00188   0.000481
+            Motorcycle          6         16          1          0          0          0
+            Police_Car         71         92      0.373       0.37      0.322      0.132
+                 Truck          7         10          1          0   0.000494   0.000237
+                   Bus         11         19          1          0    0.00182   0.000465
+Speed: 0.6ms preprocess, 24.8ms inference, 0.0ms loss, 5.7ms postprocess per image
+
+=== test ===
+mAP50: 0.0999 mAP50-95: 0.038
+Ambulance    P=0.821 R=0.026 AP50=0.121
+Fire_Truck   P=0.129 R=0.694 AP50=0.252
+Car          P=1.000 R=0.000 AP50=0.002
+Motorcycle   P=1.000 R=0.000 AP50=0.000
+Police_Car   P=0.373 R=0.370 AP50=0.322
+Truck        P=1.000 R=0.000 AP50=0.000
+Bus          P=1.000 R=0.000 AP50=0.002
+
+## Assistant:
+
+> 10/30/2026 12:19:42
+
+> Menyiapkan statistik label dan galeri sampel per split.
+>
+> - Menyiapkan statistik label dan galeri sampel per split.
+> - **Done**
+
+Hasil A, B, dan C sudah cukup untuk menyimpulkan beberapa hal. Angka yang saya sebut di bawah dibaca langsung dari output Anda, kecuali yang saya tandai sebagai hipotesis.
+
+## Terverifikasi
+
+**1. Model buruk di data validation dan test miliknya sendiri.**
+mAP50 val 0,095 dan test 0,100, hampir sama. Jadi ini bukan kebetulan satu split, dan bukan masalah GUI, NMS GUI, atau CCTV. Pada gambar yang sejenis dengan data training pun model gagal.
+
+**2. Hanya tiga kelas yang hidup, dan satu di antaranya hanya "menebak".**
+
+| Kelas | Val P / R | Test P / R | Arti |
+|---|---|---|---|
+| Fire_Truck | 0,124 / 0,481 | 0,129 / 0,694 | Recall tinggi, presisi sekitar 12%. Sekitar 88% prediksinya salah. |
+| Police_Car | 0,573 / 0,311 | 0,373 / 0,370 | Satu-satunya kelas yang agak berfungsi. |
+| Ambulance | 1,0 / 0,0 | 0,82 / 0,03 | Hampir tidak terdeteksi. |
+| Car, Motorcycle, Truck, Bus | P = 1,0, R = 0,0 | sama | Tidak terdeteksi sama sekali. |
+
+Presisi 1,0 dengan recall 0,0 adalah artefak: pada titik operasi itu tidak ada deteksi sehingga presisi dihitung kosong. Itu bukan tanda bagus.
+
+Pola recall tinggi dan presisi rendah pada Fire_Truck menjelaskan gejala truk merah yang dilabeli `Fire_Truck`. Model cenderung menjadikan Fire_Truck dan Police_Car sebagai jawaban untuk hampir semua objek. Gejala itu sudah terbukti di level model, bukan di GUI.
+
+**3. Dataset sangat condong ke kendaraan darurat.**
+Dari `labels.jpg`, Ambulance + Fire_Truck + Police_Car = 1.444 dari 2.197 objek train (sekitar 66%). Motorcycle, Truck, dan Bus masing-masing sekitar 100. Cek konsistensi: 2.197 + 610 + 300 = 3.107, sama dengan total di dokumen konteks.
+
+**4. Rata-rata sekitar 1,2 objek per gambar** (3.107 objek / 2.575 gambar). Itu khas foto satu kendaraan, bukan adegan CCTV yang ramai.
+
+## Temuan baru dari `args.yaml`
+
+Dengan `batch: 4` dan `nbs: 64`, Ultralytics mengakumulasi gradien 16 batch per langkah optimizer. Itu berarti sekitar 28 langkah per epoch (1.816 / 4 / 16), atau **sekitar 1.400 langkah total** selama 50 epoch. Learning rate 0,001 dengan SGD juga 10 kali lebih kecil dari default 0,01. Kombinasi ini sangat sedikit pembelajaran, dan cocok dengan kurva yang masih turun sampai epoch 50.
+
+**Hipotesis kuat tapi belum terbukti:** training kekurangan langkah dan LR, sehingga underfitting parah. Saya menyebutnya hipotesis karena Car punya 457 instance train tetapi AP 0,002. Underfitting saja tidak menjelaskan mengapa Car lebih buruk daripada Fire_Truck, Ambulance, dan Police_Car. Penyebab tambahan yang mungkin:
+- Label Car salah atau tidak konsisten (misalnya ID kelas bergeser saat Dataset 1 dan 3 digabung).
+- Kebingungan Car dengan Police_Car. Di confusion matrix, Car yang diprediksi Police_Car ada 37, dan 62 Car terlewat sebagai background.
+- Pemetaan head klasifikasi dari checkpoint transfer kurang baik. Val cls_loss awal sekitar 39 mendukung dugaan ini.
+
+## Soal arsitektur
+
+Model Anda 2,38 juta parameter (fused) dengan 5,3 GFLOPs, loss-nya memakai `l1_loss` dan bukan `dfl_loss`, dan versi Ultralytics 8.4.189. Menurut ingatan saya, ukuran dan jenis loss itu cocok dengan keluarga **YOLO26 nano** yang bersifat end-to-end (tanpa NMS klasik). Ini belum terverifikasi. Kalau benar, parameter `iou` saat prediksi mungkin tidak berpengaruh seperti yang diasumsikan di Tahap 3, sehingga kotak berlebih tidak bisa dibenahi lewat `iou` saja. Saya juga tidak mengenali beberapa argumen di `args.yaml` (`cls_remap`, `dis`, `dlog`), jadi saya tidak menarik kesimpulan dari argumen itu.
+
+## Langkah berikutnya
+
+**Langkah 1: cek head model.**
+
+```
+"C:\Smart Traffic Light\.venv\Scripts\python.exe" -c "from ultralytics import YOLO; m=YOLO(r'C:\MainMain\SmartTraffic_Final\runs\smarttraffic_7kelas_v1\weights\best.pt'); h=m.model.model[-1]; print(type(h).__name__, getattr(h,'end2end',None)); print(m.model.yaml.get('yaml_file'))"
+```
+
+**Langkah 2: audit label per kelas.** Simpan sebagai `C:\MainMain\audit_labels.py`. Skrip ini belum saya uji. Ia menulis statistik ukuran kotak per kelas dan membuat gambar kontak (12 sampel acak per kelas dengan kotak anotasinya) di `C:\MainMain\audit_out`.
+
+```python
+import yaml, random, cv2, numpy as np
+from pathlib import Path
+from collections import defaultdict
+
+Y = Path(r"C:\MainMain\SmartTraffic_Final\dataset.yaml")
+cfg = yaml.safe_load(open(Y, encoding="utf-8"))
+root = Path(cfg.get("path", Y.parent))
+names = cfg["names"]
+names = names if isinstance(names, dict) else dict(enumerate(names))
+OUT = Path(r"C:\MainMain\audit_out"); OUT.mkdir(exist_ok=True)
+random.seed(0)
+
+def img_dir(split):
+    p = Path(cfg[split])
+    return p if p.is_absolute() else root / p
+
+def lbl_dir(d):
+    s = str(d)
+    return Path(s.replace("\\images\\", "\\labels\\").replace("/images/", "/labels/"))
+
+def read_labels(f):
+    rows = []
+    for ln in f.read_text().splitlines():
+        p = ln.split()
+        if len(p) >= 5:
+            rows.append((int(float(p[0])), *map(float, p[1:5])))
+    return rows
+
+for split in ["train", "val", "test"]:
+    if split not in cfg:
+        continue
+    idir = img_dir(split); ldir = lbl_dir(idir)
+    files = list(ldir.glob("*.txt"))
+    stats = defaultdict(list); imgs = defaultdict(set); total = 0
+    for f in files:
+        for c, x, y, w, h in read_labels(f):
+            stats[c].append((w, h)); imgs[c].add(f); total += 1
+    print(f"\n=== {split}: {len(files)} file label, {total} objek, "
+          f"{total/max(len(files),1):.2f} objek/gambar ===")
+    print(f"{'kelas':12s} {'objek':>6s} {'gambar':>6s} {'med_w':>6s} {'med_h':>6s} {'%kecil(<1%)':>12s} {'%besar(>50%)':>13s}")
+    for c in sorted(names):
+        a = np.array(stats[c]) if stats[c] else np.zeros((0, 2))
+        if len(a) == 0:
+            print(f"{names[c]:12s} {0:6d}"); continue
+        area = a[:, 0] * a[:, 1]
+        print(f"{names[c]:12s} {len(a):6d} {len(imgs[c]):6d} {np.median(a[:,0]):6.2f} "
+              f"{np.median(a[:,1]):6.2f} {100*(area<0.01).mean():12.1f} {100*(area>0.5).mean():13.1f}")
+
+    if split != "train":
+        continue
+    stem2img = {p.stem: p for p in idir.iterdir() if p.suffix.lower() in {".jpg", ".jpeg", ".png", ".bmp", ".webp"}}
+    for c in sorted(names):
+        cand = [f for f in imgs[c] if f.stem in stem2img]
+        tiles = []
+        for f in random.sample(cand, min(12, len(cand))):
+            img = cv2.imread(str(stem2img[f.stem]))
+            if img is None:
+                continue
+            H, W = img.shape[:2]
+            th = max(2, W // 200)
+            for cc, x, y, w, h in read_labels(f):
+                if cc != c:
+                    continue
+                p1 = (int((x - w/2) * W), int((y - h/2) * H))
+                p2 = (int((x + w/2) * W), int((y + h/2) * H))
+                cv2.rectangle(img, p1, p2, (0, 255, 0), th)
+            tiles.append(cv2.resize(img, (320, 240)))
+        while tiles and len(tiles) < 12:
+            tiles.append(np.zeros((240, 320, 3), np.uint8))
+        if tiles:
+            rows = [np.hstack(tiles[i:i+4]) for i in range(0, 12, 4)]
+            cv2.imwrite(str(OUT / f"train_{c}_{names[c]}.jpg"), np.vstack(rows))
+print("\nSelesai. Lihat folder:", OUT)
+```
+
+Jalankan dengan:
+
+```
+"C:\Smart Traffic Light\.venv\Scripts\python.exe" C:\MainMain\audit_labels.py
+```
+
+Kirim tabel outputnya, lalu gambar kontak `train_2_Car.jpg`, `train_5_Truck.jpg`, dan `train_1_Fire_Truck.jpg`. Dari gambar itu kita bisa melihat apakah label Car benar-benar mobil, apakah Truck merah ada di kelas Fire_Truck, dan apakah warna merah mendominasi Fire_Truck.
+
+**Langkah 3: satu screenshot CCTV** (yang berisi truk merah atau kendaraan campur). Saya ingin membandingkan ukuran kendaraan di CCTV dengan data training, dan memakainya untuk inferensi langsung tanpa GUI.
+
+Retraining belum saya putuskan. Saya menunggu hasil audit label dan cek head dulu, karena kalau label Car atau pemetaan kelas bermasalah, retraining dengan data yang sama akan mengulang kegagalan yang sama.
+
+## User:
+
+> 10/30/2026 12:22:27
+
+![1793337713483_train_0_Ambulance.jpg](https://claude.ai/api/0f6d4a8e-5d50-428b-9248-e31b1d903cb3/files/31627c64-de8b-4634-87d1-df868bce0763/preview)
+
+![1793337713484_train_1_Fire_Truck.jpg](https://claude.ai/api/0f6d4a8e-5d50-428b-9248-e31b1d903cb3/files/b6aecce5-8cc5-4381-bb47-6b8cc353c3fc/preview)
+
+![1793337713484_train_2_Car.jpg](https://claude.ai/api/0f6d4a8e-5d50-428b-9248-e31b1d903cb3/files/bc05dd9a-2179-4637-93d2-26ee77962564/preview)
+
+![1793337713484_train_3_Motorcycle.jpg](https://claude.ai/api/0f6d4a8e-5d50-428b-9248-e31b1d903cb3/files/a47ee736-ef6f-4454-af67-6ff57a621a5b/preview)
+
+![1793337713484_train_4_Police_Car.jpg](https://claude.ai/api/0f6d4a8e-5d50-428b-9248-e31b1d903cb3/files/428f619f-2f6e-49fc-a468-6a0a38b66620/preview)
+
+![1793337713485_train_5_Truck.jpg](https://claude.ai/api/0f6d4a8e-5d50-428b-9248-e31b1d903cb3/files/f217966d-c557-4999-b4a3-b89c9bf6ac83/preview)
+
+![1793337713485_train_6_Bus.jpg](https://claude.ai/api/0f6d4a8e-5d50-428b-9248-e31b1d903cb3/files/3d35dc16-6047-41f4-bde7-89ca849a1b81/preview)
+
+Detect False
+C:\MainMain\SmartTraffic_Final\model_7kelas.yaml
+
+=== train: 1816 file label, 2197 objek, 1.21 objek/gambar ===
+kelas         objek gambar  med_w  med_h  %kecil(<1%)  %besar(>50%)
+Ambulance       321    271   0.61   0.69          0.3          35.8
+Fire_Truck      436    374   0.76   0.63          0.2          47.7
+Car             457    184   0.20   0.18         26.0           9.8
+Motorcycle      101     63   0.34   0.46          5.0          24.8
+Police_Car      687    511   0.68   0.60          0.1          41.0
+Truck            96     65   0.48   0.40         10.4          30.2
+Bus              99     68   0.46   0.56          8.1          28.3
+
+=== val: 512 file label, 610 objek, 1.19 objek/gambar ===
+kelas         objek gambar  med_w  med_h  %kecil(<1%)  %besar(>50%)
+Ambulance        96     83   0.58   0.68          0.0          39.6
+Fire_Truck      129    113   0.79   0.66          0.0          56.6
+Car             119     45   0.19   0.20         21.8          10.1
+Motorcycle       23     21   0.66   0.57          0.0          30.4
+Police_Car      190    135   0.59   0.56          1.1          37.4
+Truck            30     19   0.32   0.34         10.0          16.7
+Bus              23     15   0.52   0.69          0.0          34.8
+
+=== test: 247 file label, 300 objek, 1.21 objek/gambar ===
+kelas         objek gambar  med_w  med_h  %kecil(<1%)  %besar(>50%)
+Ambulance        39     37   0.65   0.64          0.0          38.5
+Fire_Truck       49     45   0.83   0.68          0.0          61.2
+Car              75     30   0.18   0.13         32.0           9.3
+Motorcycle       16      6   0.27   0.38         12.5          18.8
+Police_Car       92     71   0.71   0.64          0.0          44.6
+Truck            10      7   0.67   0.57          0.0          30.0
+Bus              19     11   0.49   0.56          5.3          31.6
+
+## Assistant:
+
+> 10/30/2026 12:23:47
+
+> Menyusun skrip audit warna untuk kelas Truck.
+>
+> - Menyusun skrip audit warna untuk kelas Truck.
+> - **Done**
+
+Semua temuan di bawah berdasarkan 12 sampel acak per kelas dan tabel Anda, bukan audit penuh. Karena itu saya menyebut "terlihat", bukan "terbukti", untuk hal yang belum dihitung.
+
+## Koreksi dugaan saya sebelumnya
+
+Hasil cek head menunjukkan `Detect False`, jadi head-nya `Detect` biasa dan **bukan end-to-end**. Dugaan saya soal YOLO26 salah. NMS klasik berjalan, sehingga `iou` dan `agnostic_nms` memang berpengaruh dan Tahap 3 tetap relevan.
+
+## Temuan dari gambar kontak
+
+**1. Label Truck tidak konsisten (terlihat jelas).**
+- Tile pertama kelas Truck adalah **mobil pemadam kebakaran merah** (tulisan "FIRE & RESCUE") yang berlabel `Truck`. Model diajari bahwa mobil pemadam kadang `Fire_Truck` dan kadang `Truck`.
+- Isi kelas Truck sangat campur: pickup merah, pickup/SUV putih, truk bak, truk trailer, truk parade penuh orang, dan **truk mainan miniatur**.
+- Setidaknya 4 dari 12 sampel Truck berwarna merah atau oranye. Jadi sebagian truk merah non-pemadam ada di data, tetapi jumlahnya sangat kecil (96 objek) dibanding Fire_Truck (436).
+
+**2. Fire_Truck: 12 dari 12 sampel merah, sudut dekat, ukuran besar.** Hampir semuanya truk pemadam gaya Rusia dari samping atau depan. Dugaan "model bergantung pada warna merah" sekarang punya dasar visual yang kuat, tetapi belum diukur. Skrip di bawah akan mengukurnya.
+
+**3. Kendaraan darurat tampak berasal dari satu sumber.** Livery Police_Car (biru-putih "ПОЛИЦИЯ/ДПС"), Ambulance (putih atau kuning dengan palang merah), dan Fire_Truck tampak khas Rusia. Sebaliknya Car, Motorcycle, Truck, dan Bus tampak seperti foto umum (mobil pameran, iklan majalah, bus tingkat, bus sekolah). Ini sesuai catatan bahwa dataset berasal dari Dataset 1 dan 3. Jika benar, kelas berkorelasi dengan sumber gambar, dan model bisa belajar "gaya gambar" alih-alih "jenis kendaraan". Ini hipotesis dari pengamatan visual.
+
+**4. Kelas berkorelasi dengan ukuran objek (terverifikasi dari tabel).**
+
+| Kelompok | Median lebar × tinggi | Objek besar (>50% gambar) |
+|---|---|---|
+| Fire_Truck, Police_Car, Ambulance | 0,61–0,76 × 0,60–0,69 | 36–48% |
+| Car | 0,20 × 0,18 | 9,8% |
+
+Kendaraan darurat hampir selalu besar dan dekat, sedangkan Car kecil dan tersebar. CCTV hampir semuanya berisi kendaraan kecil, jadi hampir tidak ada contoh kendaraan darurat berukuran CCTV di data. Dugaan saya, model memetakan "kendaraan besar" ke Fire_Truck atau Police_Car dan mengabaikan yang kecil. Ini belum terbukti.
+
+**5. Label Car bermasalah (terlihat pada beberapa tile).**
+- Kotak besar pada foto pasangan di iklan majalah, kemungkinan label salah.
+- Kotak pada mobil buram di belakang pengendara sepeda roda satu.
+- Banyak mobil klasik, mobil pameran, dan gambar iklan, yang jauh dari CCTV.
+- Kotak tumpang tindih pada beberapa tile.
+
+Itu bisa ikut menjelaskan AP Car 0,002, bersama sebab lain: objek kecil, sedikit gambar (184), dan model yang undertrained.
+
+**6. Motorcycle:** satu sampel adalah render CGI. Konvensi kotak tidak konsisten (sebagian termasuk pengendara, sebagian hanya motor). Median lebar val (0,66) berbeda jauh dari train (0,34) dengan hanya 23 sampel, jadi angka val Motorcycle tidak bisa diandalkan.
+
+**7. Ambulance:** satu sampel adalah van merah berlivery yang tampak seperti dinas pemadam, tetapi berlabel Ambulance. Ini perlu dicek.
+
+**8. Bus** paling konsisten, tetapi hanya 99 objek dan tidak ada contoh CCTV.
+
+## Kesimpulan sementara
+
+- **Terverifikasi:** model gagal pada val dan test sendiri; head `Detect` dengan NMS klasik; Fire_Truck punya presisi sekitar 12% dengan recall tinggi; ada noise label Truck/Fire_Truck; ukuran objek berbeda tajam antar kelas.
+- **Hipotesis kuat:** distribusi dataset (sumber, warna, ukuran) cukup untuk menjelaskan bias Fire_Truck tanpa melibatkan GUI.
+- **Belum dibuktikan:** besarnya bias warna, jumlah label salah pada Car dan Truck, serta penyebab kotak berlebih pada CCTV.
+
+Retraining belum saya putuskan. Tetapi retraining dengan data yang sama hampir pasti mengulang pola ini, jadi rencana nanti harus mencakup pembersihan label Truck dan Car serta data berukuran CCTV.
+
+## Langkah berikutnya
+
+**Skrip A: ukur bias warna dan buat grid semua crop Truck.** Simpan sebagai `C:\MainMain\audit_color.py` (belum diuji):
+
+```python
+import yaml, cv2, numpy as np
+from pathlib import Path
+
+Y = Path(r"C:\MainMain\SmartTraffic_Final\dataset.yaml")
+cfg = yaml.safe_load(open(Y, encoding="utf-8"))
+root = Path(cfg.get("path", Y.parent))
+names = cfg["names"]; names = names if isinstance(names, dict) else dict(enumerate(names))
+idir = Path(cfg["train"]); idir = idir if idir.is_absolute() else root / idir
+ldir = Path(str(idir).replace("\\images\\", "\\labels\\").replace("/images/", "/labels/"))
+exts = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
+stem2img = {p.stem: p for p in idir.iterdir() if p.suffix.lower() in exts}
+
+red = {c: [] for c in names}; truck_crops = []
+for lf in ldir.glob("*.txt"):
+    ip = stem2img.get(lf.stem)
+    if ip is None: continue
+    img = cv2.imread(str(ip))
+    if img is None: continue
+    H, W = img.shape[:2]
+    for ln in lf.read_text().splitlines():
+        p = ln.split()
+        if len(p) < 5: continue
+        c = int(float(p[0])); x, y, w, h = map(float, p[1:5])
+        x1, y1 = max(0, int((x-w/2)*W)), max(0, int((y-h/2)*H))
+        x2, y2 = min(W, int((x+w/2)*W)), min(H, int((y+h/2)*H))
+        crop = img[y1:y2, x1:x2]
+        if crop.shape[0] < 8 or crop.shape[1] < 8: continue
+        hsv = cv2.cvtColor(crop, cv2.COLOR_BGR2HSV)
+        hh, ss, vv = hsv[..., 0], hsv[..., 1], hsv[..., 2]
+        red[c].append((((hh < 8) | (hh > 172)) & (ss > 120) & (vv > 70)).mean())
+        if c == 5: truck_crops.append(cv2.resize(crop, (160, 120)))
+
+print(f"{'kelas':12s} {'n':>5s} {'median_merah':>13s} {'%kotak_merah>15%':>17s}")
+for c in sorted(names):
+    a = np.array(red[c])
+    if len(a): print(f"{names[c]:12s} {len(a):5d} {np.median(a):13.3f} {100*(a>0.15).mean():17.1f}")
+
+out = Path(r"C:\MainMain\audit_out"); out.mkdir(exist_ok=True)
+cols = 12; rows = (len(truck_crops) + cols - 1) // cols
+truck_crops += [np.zeros((120, 160, 3), np.uint8)] * (rows * cols - len(truck_crops))
+grid = np.vstack([np.hstack(truck_crops[i:i+cols]) for i in range(0, len(truck_crops), cols)])
+cv2.imwrite(str(out / "truck_all.jpg"), grid)
+print("Grid Truck:", out / "truck_all.jpg")
+```
+
+```
+"C:\Smart Traffic Light\.venv\Scripts\python.exe" C:\MainMain\audit_color.py
+```
+
+Kirim tabel outputnya dan `truck_all.jpg`. Dari grid itu kita bisa menghitung berapa label Truck yang sebenarnya mobil pemadam, pickup, SUV, atau mainan.
+
+**Skrip B: inferensi langsung tanpa GUI.** Buat folder `C:\MainMain\diag_in`, isi dengan 3 sampai 5 gambar val dan **screenshot CCTV Anda (truk merah, mobil, motor, kendaraan besar)**. Screenshot CCTV ini masih belum saya terima dan tetap saya butuhkan. Simpan sebagai `C:\MainMain\infer_diag.py` (belum diuji):
+
+```python
+import sys
+from pathlib import Path
+import numpy as np
+from ultralytics import YOLO
+
+W = r"C:\MainMain\SmartTraffic_Final\runs\smarttraffic_7kelas_v1\weights\best.pt"
+src = Path(sys.argv[1])
+files = [src] if src.is_file() else sorted(p for p in src.iterdir() if p.suffix.lower() in {".jpg", ".jpeg", ".png"})
+m = YOLO(W)
+
+def iou(a, b):
+    x1, y1 = max(a[0], b[0]), max(a[1], b[1]); x2, y2 = min(a[2], b[2]), min(a[3], b[3])
+    inter = max(0, x2-x1) * max(0, y2-y1)
+    u = (a[2]-a[0])*(a[3]-a[1]) + (b[2]-b[0])*(b[3]-b[1]) - inter
+    return inter / u if u > 0 else 0
+
+for f in files:
+    for tag, kw in [("iou045", dict(iou=0.45)), ("iou045_agnostic", dict(iou=0.45, agnostic_nms=True))]:
+        r = m.predict(str(f), imgsz=640, conf=0.10, device="cpu", verbose=False,
+                      save=True, project=r"C:\MainMain\diag_out", name=tag, exist_ok=True, **kw)[0]
+        xy = r.boxes.xyxy.cpu().numpy(); c = r.boxes.cls.cpu().numpy().astype(int); s = r.boxes.conf.cpu().numpy()
+        same = diff = 0
+        for i in range(len(xy)):
+            for j in range(i+1, len(xy)):
+                if iou(xy[i], xy[j]) > 0.5:
+                    if c[i] == c[j]: same += 1
+                    else: diff += 1
+        print(f"{f.name} [{tag}] n={len(xy)} overlap>0.5: samaKelas={same} bedaKelas={diff}")
+        for k in np.argsort(-s)[:8]:
+            print(f"   {r.names[c[k]]:11s} {s[k]:.2f}", [int(v) for v in xy[k]])
+```
+
+```
+"C:\Smart Traffic Light\.venv\Scripts\python.exe" C:\MainMain\infer_diag.py C:\MainMain\diag_in
+```
+
+Kirim teks outputnya dan satu atau dua gambar hasil dari `C:\MainMain\diag_out`. Dari situ kita bisa memisahkan apakah kotak berlebih bertumpuk pada kelas yang sama (masalah NMS atau model) atau lintas kelas (kebingungan klasifikasi), dan apakah `agnostic_nms` mengubahnya.
+
+## User:
+
+> 10/30/2026 12:27:28
+
+![1793337943378_truck_all.jpg](https://claude.ai/api/0f6d4a8e-5d50-428b-9248-e31b1d903cb3/files/3e15658d-e28b-408f-8382-8347686caea9/preview)
+
+Traceback (most recent call last):
+  File "C:\MainMain\infer_diag.py", line 7, in <module>
+    src = Path(sys.argv[1])
+               ~~~~~~~~^^^
+IndexError: list index out of range
+
+## Assistant:
+
+> 10/30/2026 12:27:44
+
+Ada dua hal: error skrip B dan grid Truck. Saya bahas error dulu karena itu cepat diperbaiki.
+
+## Error `infer_diag.py`
+
+Itu salah saya, bukan skrip yang rusak. Skripnya membaca folder dari argumen perintah (`sys.argv[1]`), sedangkan perintah yang Anda jalankan kemungkinan tanpa argumen. Pastikan folder `C:\MainMain\diag_in` sudah berisi gambar, lalu jalankan dengan argumennya di akhir:
+
+```
+"C:\Smart Traffic Light\.venv\Scripts\python.exe" C:\MainMain\infer_diag.py C:\MainMain\diag_in
+```
+
+Kalau Anda sudah menyertakan argumen dan error tetap muncul, kirim baris perintah persisnya.
+
+## Grid Truck (`truck_all.jpg`)
+
+Saya hanya melihat gambarnya. Tabel warna dari `audit_color.py` belum Anda kirim, jadi bias warna belum terukur. Hitungan di bawah saya lakukan dengan mata pada sekitar 88 crop, jadi angkanya perkiraan kasar.
+
+**Terlihat jelas:**
+
+- **Mobil pemadam berlabel Truck: minimal 4 crop.** Dua adalah mobil pemadam merah-kuning bergaya Inggris (baris 3 kolom 1 dan baris 4 kolom 3), satu truk pemadam merah di baris 5 kolom 11 ("LOPEZ ISLAND"), dan satu di baris 6 kolom 3. Mobil pemadam yang sama persis jenisnya ada di kelas Fire_Truck, jadi ini kontradiksi label langsung. Model belajar bahwa kendaraan merah-kuning pemadam kadang `Fire_Truck`, kadang `Truck`.
+- **Pickup dan SUV: sekitar sepertiga isi kelas.** Banyak pickup putih, hitam, merah, dan biru. Banyak yang tidak diragukan lagi bukan truk besar.
+- **Van dan minibus tua:** satu kelompok crop abu-abu bergambar van klasik (baris 3 kolom 4 sampai 8) tampaknya satu foto yang dipotong berkali-kali.
+- **Kendaraan konstruksi:** crane kuning, alat berat, dan truk dengan penghalang oranye (baris 1 dan 2).
+- **Truk mainan dan model miniatur:** minimal 2 (baris 1 kolom 3 dan baris 7 kolom 10).
+- **Ambulans militer** (baris 5 kolom 6, bertanda palang merah) berlabel Truck, padahal kelas Ambulance ada.
+- **Crop buram atau gelap sekali:** sekitar 15 sampai 20 crop, termasuk beberapa yang nyaris tidak terlihat. Ini jauh lebih banyak dari dugaan saya sebelumnya.
+- **Truk berat sungguhan** (trailer, kontainer, tanker, truk kayu) hanya sekitar 20 sampai 25 crop.
+
+## Kesimpulan dari grid
+
+Kelas Truck bukan satu konsep visual. Isinya campuran pickup, pemadam, ambulans militer, kendaraan konstruksi, mainan, dan crop kabur. Dengan 96 objek, model tidak punya cara yang masuk akal untuk menyatukannya. Itu cocok dengan AP Truck 0,000.
+
+Ini bukti dari sisi data, bukan dari sisi inferensi. Hubungannya dengan truk merah yang dilabeli Fire_Truck di CCTV masih hipotesis sampai kita melihat inferensi langsung.
+
+**Implikasi untuk definisi kelas:** sebelum retraining, tentukan dulu apa yang dimaksud `Truck` di sistem lampu lalu lintas Anda (truk barang berat saja? pickup termasuk?). Pickup dan SUV mungkin lebih cocok digabung ke Car atau dikeluarkan. Keputusan itu ada di Anda.
+
+## Yang saya tunggu
+
+1. **Output `audit_color.py`** (tabel `median_merah`). Itu yang mengukur bias warna secara angka.
+2. **Output `infer_diag.py`** setelah perintah diperbaiki, plus satu atau dua gambar dari `C:\MainMain\diag_out`.
+3. **Screenshot CCTV** dengan truk merah dan kendaraan campur. Ini masih belum saya terima, dan tanpanya perbandingan ukuran kendaraan dengan data training tidak bisa diselesaikan.
+
+Retraining tetap belum saya putuskan, tetapi data sekarang cukup jelas menunjukkan bahwa retraining dengan label yang sama akan mengulang masalah ini.
+
+## User:
+
+> 10/30/2026 12:29:12
+
+kelas            n  median_merah  %kotak_merah>15%
+Ambulance      321         0.023               2.2
+Fire_Truck     436         0.228              85.1
+Car            451         0.001               8.9
+Motorcycle     101         0.004               3.0
+Police_Car     687         0.003               0.1
+Truck           96         0.002              11.5
+Bus             99         0.008              11.1
+Grid Truck: C:\MainMain\audit_out\truck_all.jpg
+saya kurang paham yg 2, dan untuk 3 saya tidak punya fotonya karena tidak sempat
+
+## Assistant:
+
+> 10/30/2026 12:29:36
+
+> Tallying red boxes per vehicle class to estimate their share.
+>
+> - Tallying red boxes per vehicle class to estimate their share.
+> - **Done**
+
+Tidak apa-apa soal screenshot CCTV, kita bisa jalan tanpa itu. Saya jelaskan dulu hasil tabel Anda, lalu langkah 2 dengan lebih sederhana.
+
+## Hasil tabel warna
+
+Tabel ini mengukur seberapa banyak piksel merah di dalam kotak anotasi tiap kelas.
+
+| Kelas | Kotak yang cukup merah | Perkiraan jumlah |
+|---|---|---|
+| Fire_Truck | 85,1% | sekitar 371 dari 436 |
+| Car | 8,9% | sekitar 40 |
+| Truck | 11,5% | sekitar 11 |
+| Bus | 11,1% | sekitar 11 |
+| Ambulance | 2,2% | sekitar 7 |
+| Motorcycle | 3,0% | sekitar 3 |
+| Police_Car | 0,1% | sekitar 1 |
+
+**Terverifikasi:** di data training, merah hampir identik dengan Fire_Truck. Dari semua kotak merah, sekitar 84% berlabel Fire_Truck. Contoh truk merah yang bukan pemadam hanya sekitar 60 kotak. Model yang diajari seperti ini akan mudah belajar "merah berarti Fire_Truck".
+
+**Masih hipotesis:** model benar-benar memakai warna sebagai petunjuk. Tabel ini hanya membuktikan korelasi di data. Cara membuktikannya adalah menguji model pada truk merah non-pemadam, dan itu fungsi langkah 2.
+
+Angka perkiraan jumlah di atas saya hitung dari persentase, jadi bisa meleset sedikit.
+
+## Langkah 2 dalam bahasa sederhana
+
+Tujuannya: memberi model beberapa gambar, lalu melihat apa yang ia tebak, tanpa GUI. Dengan begitu kita bisa memisahkan masalah model dari masalah GUI. Error sebelumnya muncul karena skrip tidak diberi tahu folder gambarnya.
+
+**a. Buat folder dan isi gambarnya.** Buka CMD:
+
+```
+mkdir C:\MainMain\diag_in
+```
+
+Lalu salin 5 sampai 8 gambar ke folder itu lewat File Explorer. Karena belum ada screenshot CCTV, gunakan:
+
+1. **2 sampai 3 gambar dari val set.** Folder gambarnya kemungkinan `C:\MainMain\SmartTraffic_Final\images\valid` (saya menebak dari nama folder label `labels\valid`). Pilih yang berisi mobil, truk, atau motor.
+2. **2 sampai 3 gambar dari internet atau galeri HP Anda:** terutama satu **truk merah non-pemadam** (truk kontainer atau truk barang merah), satu **mobil biasa**, dan satu **bus**. Ini pengganti CCTV dan justru paling berguna untuk menguji bias merah.
+
+**b. Jalankan skrip.** Simpan dulu skripnya jika belum, lalu jalankan dengan folder di akhir perintah:
+
+```
+"C:\Smart Traffic Light\.venv\Scripts\python.exe" C:\MainMain\infer_diag.py C:\MainMain\diag_in
+```
+
+Folder `C:\MainMain\diag_in` harus ada dan berisi gambar. Kalau tidak, hasilnya kosong atau error.
+
+**c. Yang dikirim ke saya:**
+1. Teks yang muncul di CMD (daftar prediksi per gambar).
+2. Satu atau dua gambar hasil dari `C:\MainMain\diag_out\iou045` (gambar yang sudah diberi kotak). Cukup gambar truk merah dan satu gambar lain.
+
+## Yang akan saya baca dari hasilnya
+
+- Apakah truk merah non-pemadam diberi label `Fire_Truck`. Ini menguji hipotesis bias warna.
+- Apakah satu kendaraan punya banyak kotak, dan apakah kotak itu sama kelas atau beda kelas. Ini memisahkan masalah NMS dari kebingungan klasifikasi.
+- Apakah `agnostic_nms` mengurangi kotak berlebih.
+
+## Untuk screenshot CCTV nanti
+
+Kalau suatu saat Anda membuka feed CCTV lagi, tekan **Win + Shift + S**, pilih area, lalu simpan gambarnya. Satu screenshot truk merah dan satu yang ramai kendaraan sudah cukup. Itu tidak mendesak sekarang.
+
+## User:
+
+> 10/30/2026 12:30:32
+
+salin gambar ini tu gambar apaa
+
+## Assistant:
+
+> 10/30/2026 12:30:40
+
+Maksud "salin" di sini adalah **copy file gambar** dari satu folder ke folder `C:\MainMain\diag_in`, supaya skrip punya bahan untuk diuji. Anda tidak perlu mengedit apa pun.
+
+## Gambar apa yang dicari
+
+Kita butuh gambar kendaraan yang akan "ditebak" oleh model. Cukup 5 sampai 8 gambar, dari dua sumber:
+
+**1. Dari val set (sudah ada di komputer Anda)**
+- Buka File Explorer, masuk ke `C:\MainMain\SmartTraffic_Final\images\valid` (nama folder ini tebakan saya; kalau tidak ada, lihat isi folder `images` dan pilih yang namanya mirip `val` atau `valid`).
+- Pilih 2 sampai 3 gambar yang terlihat ada mobil, truk, atau motor.
+- Klik kanan, **Copy**, lalu buka `C:\MainMain\diag_in`, klik kanan, **Paste**.
+
+**2. Dari internet atau galeri HP (ini yang paling penting)**
+Cari dan simpan gambar ini:
+- **Truk merah biasa**, bukan pemadam. Contoh: truk kontainer atau truk barang berwarna merah. Ini untuk menguji apakah model asal menyebut "Fire_Truck" setiap melihat warna merah.
+- **Satu mobil biasa** (sedan atau minibus di jalan).
+- **Satu bus**.
+- Kalau bisa, **satu motor**.
+
+Cara cepat: cari di Google Images, misalnya "truk kontainer merah di jalan raya", klik kanan gambar, **Save image as**, lalu simpan langsung ke `C:\MainMain\diag_in`.
+
+## Sebelum menjalankan skrip
+
+Pastikan folder `C:\MainMain\diag_in` sudah ada. Kalau belum, buat dengan perintah ini di CMD:
+
+```
+mkdir C:\MainMain\diag_in
+```
+
+Format gambarnya `.jpg`, `.jpeg`, atau `.png`. Format lain akan dilewati skrip.
+
+Setelah folder terisi, jalankan:
+
+```
+"C:\Smart Traffic Light\.venv\Scripts\python.exe" C:\MainMain\infer_diag.py C:\MainMain\diag_in
+```
+
+Lalu kirim teks yang muncul di CMD, dan satu atau dua gambar hasil dari `C:\MainMain\diag_out\iou045`. Kalau ada langkah yang masih membingungkan, bilang saja bagian mana.
+
+## User:
+
+> 10/30/2026 12:32:28
+
+![D1_0a836954ceeac15f_jpg.rf.7f4bcc9a1e1d2db7dabcd6676a2ac8af.jpg](https://claude.ai/api/0f6d4a8e-5d50-428b-9248-e31b1d903cb3/files/6f413be6-3584-4e9a-8a2c-dc43f3cbfa94/preview)
+
+![D1_1d3c0507e127f1ea_jpg.rf.2c6a1e3b13c7582a2072e3204c8f010d.jpg](https://claude.ai/api/0f6d4a8e-5d50-428b-9248-e31b1d903cb3/files/1ce71de5-b21f-4f9c-a5b1-aa406cf5fbf8/preview)
+
+![D1_0b5890eed288c58e_jpg.rf.f328eddd47ca0245af243fe116dd26f8.jpg](https://claude.ai/api/0f6d4a8e-5d50-428b-9248-e31b1d903cb3/files/a8990cd2-9ffe-430f-a706-58700292f90d/preview)
+
+![D1_0c50d905a9db3118_jpg.rf.42b17615f7055ea54f5c6eb706c91f9c.jpg](https://claude.ai/api/0f6d4a8e-5d50-428b-9248-e31b1d903cb3/files/6232ffb0-d730-4d48-85fe-38147e316bfd/preview)
+
+![D1_4c40c429a5a070e8_jpg.rf.e6b36721b90b2f3b56a43312e59a2eed.jpg](https://claude.ai/api/0f6d4a8e-5d50-428b-9248-e31b1d903cb3/files/2caea0c3-a84b-4179-a622-bc4260583d39/preview)
+
+![D1_3a2a06b1d3705da9_jpg.rf.2d7bec38f174007fdee862e87a0681be.jpg](https://claude.ai/api/0f6d4a8e-5d50-428b-9248-e31b1d903cb3/files/8c99592a-ed36-4d48-b3ba-567de80af219/preview)
+
+![D1_2ddd5c87ecbc6060_jpg.rf.34b347e8629726c7485bbec07d2e4a55.jpg](https://claude.ai/api/0f6d4a8e-5d50-428b-9248-e31b1d903cb3/files/eb40bc0f-7158-4d40-9c03-bcc107534757/preview)
+
+![D1_13b1404f87507b51_jpg.rf.4bf682cfa4c84cff502d30594ce7f6fa.jpg](https://claude.ai/api/0f6d4a8e-5d50-428b-9248-e31b1d903cb3/files/b78d7ffa-7331-4099-a840-7f0393e18abc/preview)
+
+![D1_25ceb16e759fbc8e_jpg.rf.868d326b2b6f4aa6a69ecde979206809.jpg](https://claude.ai/api/0f6d4a8e-5d50-428b-9248-e31b1d903cb3/files/82163d6e-45f1-408e-b7af-c076b908d93d/preview)
+
+```text
+Results saved to C:\MainMain\diag_out\iou045
+D1_0013d97a44c586c0_jpg.rf.c129e0f75e464334397783e12eeddd69.jpg [iou045] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045_agnostic
+D1_0013d97a44c586c0_jpg.rf.c129e0f75e464334397783e12eeddd69.jpg [iou045_agnostic] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045
+D1_07a108f07e99070b_jpg.rf.319BfYKHczTQNiU3Rv20.jpg [iou045] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045_agnostic
+D1_07a108f07e99070b_jpg.rf.319BfYKHczTQNiU3Rv20.jpg [iou045_agnostic] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045
+D1_07d61c5699b6f4da_jpg.rf.c91a31a6ac5fcc72f98ba6b6e7585168.jpg [iou045] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045_agnostic
+D1_07d61c5699b6f4da_jpg.rf.c91a31a6ac5fcc72f98ba6b6e7585168.jpg [iou045_agnostic] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045
+D1_0a836954ceeac15f_jpg.rf.7f4bcc9a1e1d2db7dabcd6676a2ac8af.jpg [iou045] n=1 overlap>0.5: samaKelas=0 bedaKelas=0
+   Fire_Truck  0.20 [181, 227, 402, 416]
+Results saved to C:\MainMain\diag_out\iou045_agnostic
+D1_0a836954ceeac15f_jpg.rf.7f4bcc9a1e1d2db7dabcd6676a2ac8af.jpg [iou045_agnostic] n=1 overlap>0.5: samaKelas=0 bedaKelas=0
+   Fire_Truck  0.20 [181, 227, 402, 416]
+Results saved to C:\MainMain\diag_out\iou045
+D1_0b5890eed288c58e_jpg.rf.f328eddd47ca0245af243fe116dd26f8.jpg [iou045] n=4 overlap>0.5: samaKelas=0 bedaKelas=0
+   Fire_Truck  0.66 [136, 12, 323, 171]
+   Police_Car  0.22 [0, 247, 91, 416]
+   Police_Car  0.18 [0, 0, 133, 188]
+   Fire_Truck  0.14 [70, 17, 292, 238]
+Results saved to C:\MainMain\diag_out\iou045_agnostic
+D1_0b5890eed288c58e_jpg.rf.f328eddd47ca0245af243fe116dd26f8.jpg [iou045_agnostic] n=4 overlap>0.5: samaKelas=0 bedaKelas=0
+   Fire_Truck  0.66 [136, 12, 323, 171]
+   Police_Car  0.22 [0, 247, 91, 416]
+   Police_Car  0.18 [0, 0, 133, 188]
+   Fire_Truck  0.14 [70, 17, 292, 238]
+Results saved to C:\MainMain\diag_out\iou045
+D1_0c50d905a9db3118_jpg.rf.42b17615f7055ea54f5c6eb706c91f9c.jpg [iou045] n=1 overlap>0.5: samaKelas=0 bedaKelas=0
+   Fire_Truck  0.13 [162, 14, 381, 227]
+Results saved to C:\MainMain\diag_out\iou045_agnostic
+D1_0c50d905a9db3118_jpg.rf.42b17615f7055ea54f5c6eb706c91f9c.jpg [iou045_agnostic] n=1 overlap>0.5: samaKelas=0 bedaKelas=0
+   Fire_Truck  0.13 [162, 14, 381, 227]
+Results saved to C:\MainMain\diag_out\iou045
+D1_11b0e2dddc393e74_jpg.rf.58418e3bb1d6a4f0232dbce9bc7dde39.jpg [iou045] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045_agnostic
+D1_11b0e2dddc393e74_jpg.rf.58418e3bb1d6a4f0232dbce9bc7dde39.jpg [iou045_agnostic] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045
+D1_13b1404f87507b51_jpg.rf.4bf682cfa4c84cff502d30594ce7f6fa.jpg [iou045] n=4 overlap>0.5: samaKelas=0 bedaKelas=0
+   Fire_Truck  0.51 [40, 137, 289, 344]
+   Fire_Truck  0.29 [0, 84, 202, 293]
+   Fire_Truck  0.14 [0, 32, 400, 355]
+   Fire_Truck  0.13 [135, 179, 346, 361]
+Results saved to C:\MainMain\diag_out\iou045_agnostic
+D1_13b1404f87507b51_jpg.rf.4bf682cfa4c84cff502d30594ce7f6fa.jpg [iou045_agnostic] n=4 overlap>0.5: samaKelas=0 bedaKelas=0
+   Fire_Truck  0.51 [40, 137, 289, 344]
+   Fire_Truck  0.29 [0, 84, 202, 293]
+   Fire_Truck  0.14 [0, 32, 400, 355]
+   Fire_Truck  0.13 [135, 179, 346, 361]
+Results saved to C:\MainMain\diag_out\iou045
+D1_1d3c0507e127f1ea_jpg.rf.2c6a1e3b13c7582a2072e3204c8f010d.jpg [iou045] n=1 overlap>0.5: samaKelas=0 bedaKelas=0
+   Fire_Truck  0.11 [122, 166, 301, 329]
+Results saved to C:\MainMain\diag_out\iou045_agnostic
+D1_1d3c0507e127f1ea_jpg.rf.2c6a1e3b13c7582a2072e3204c8f010d.jpg [iou045_agnostic] n=1 overlap>0.5: samaKelas=0 bedaKelas=0
+   Fire_Truck  0.11 [122, 166, 301, 329]
+Results saved to C:\MainMain\diag_out\iou045
+D1_1f133e6ee29e99d0_jpg.rf.c3edd22ab67ab12d42c66fc9e14c0a1f.jpg [iou045] n=1 overlap>0.5: samaKelas=0 bedaKelas=0
+   Fire_Truck  0.23 [128, 117, 245, 317]
+Results saved to C:\MainMain\diag_out\iou045_agnostic
+D1_1f133e6ee29e99d0_jpg.rf.c3edd22ab67ab12d42c66fc9e14c0a1f.jpg [iou045_agnostic] n=1 overlap>0.5: samaKelas=0 bedaKelas=0
+   Fire_Truck  0.23 [128, 117, 245, 317]
+Results saved to C:\MainMain\diag_out\iou045
+D1_25ceb16e759fbc8e_jpg.rf.868d326b2b6f4aa6a69ecde979206809.jpg [iou045] n=1 overlap>0.5: samaKelas=0 bedaKelas=0
+   Police_Car  0.11 [20, 5, 274, 89]
+Results saved to C:\MainMain\diag_out\iou045_agnostic
+D1_25ceb16e759fbc8e_jpg.rf.868d326b2b6f4aa6a69ecde979206809.jpg [iou045_agnostic] n=1 overlap>0.5: samaKelas=0 bedaKelas=0
+   Police_Car  0.11 [20, 5, 274, 89]
+Results saved to C:\MainMain\diag_out\iou045
+D1_28e0b4c029d15510_jpg.rf.a46965768162850af366ec3c676879f1.jpg [iou045] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045_agnostic
+D1_28e0b4c029d15510_jpg.rf.a46965768162850af366ec3c676879f1.jpg [iou045_agnostic] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045
+D1_2b06ed2955aa861d_jpg.rf.79b1cc8ca28f1097bfd95e086021e7e0.jpg [iou045] n=1 overlap>0.5: samaKelas=0 bedaKelas=0
+   Fire_Truck  0.11 [59, 10, 252, 190]
+Results saved to C:\MainMain\diag_out\iou045_agnostic
+D1_2b06ed2955aa861d_jpg.rf.79b1cc8ca28f1097bfd95e086021e7e0.jpg [iou045_agnostic] n=1 overlap>0.5: samaKelas=0 bedaKelas=0
+   Fire_Truck  0.11 [59, 10, 252, 190]
+Results saved to C:\MainMain\diag_out\iou045
+D1_2ddd5c87ecbc6060_jpg.rf.34b347e8629726c7485bbec07d2e4a55.jpg [iou045] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045_agnostic
+D1_2ddd5c87ecbc6060_jpg.rf.34b347e8629726c7485bbec07d2e4a55.jpg [iou045_agnostic] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045
+D1_3a2a06b1d3705da9_jpg.rf.2d7bec38f174007fdee862e87a0681be.jpg [iou045] n=1 overlap>0.5: samaKelas=0 bedaKelas=0
+   Police_Car  0.15 [0, 116, 230, 412]
+Results saved to C:\MainMain\diag_out\iou045_agnostic
+D1_3a2a06b1d3705da9_jpg.rf.2d7bec38f174007fdee862e87a0681be.jpg [iou045_agnostic] n=1 overlap>0.5: samaKelas=0 bedaKelas=0
+   Police_Car  0.15 [0, 116, 230, 412]
+Results saved to C:\MainMain\diag_out\iou045
+D1_3dd95762b8a9c4a9_jpg.rf.3647a732c5384fea27fdd145634b9ed6.jpg [iou045] n=1 overlap>0.5: samaKelas=0 bedaKelas=0
+   Fire_Truck  0.10 [255, 154, 415, 348]
+Results saved to C:\MainMain\diag_out\iou045_agnostic
+D1_3dd95762b8a9c4a9_jpg.rf.3647a732c5384fea27fdd145634b9ed6.jpg [iou045_agnostic] n=1 overlap>0.5: samaKelas=0 bedaKelas=0
+   Fire_Truck  0.10 [255, 154, 415, 348]
+Results saved to C:\MainMain\diag_out\iou045
+D1_4a11e1503e4317a1_jpg.rf.96844f77383a8af09e82a815f222df0e.jpg [iou045] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045_agnostic
+D1_4a11e1503e4317a1_jpg.rf.96844f77383a8af09e82a815f222df0e.jpg [iou045_agnostic] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045
+D1_4a132f56869e2ade_jpg.rf.83KWRSVfUPoQaoOtVBGh.jpg [iou045] n=2 overlap>0.5: samaKelas=0 bedaKelas=0
+   Fire_Truck  0.31 [15, 53, 174, 326]
+   Fire_Truck  0.13 [160, 71, 362, 294]
+Results saved to C:\MainMain\diag_out\iou045_agnostic
+D1_4a132f56869e2ade_jpg.rf.83KWRSVfUPoQaoOtVBGh.jpg [iou045_agnostic] n=2 overlap>0.5: samaKelas=0 bedaKelas=0
+   Fire_Truck  0.31 [15, 53, 174, 326]
+   Fire_Truck  0.13 [160, 71, 362, 294]
+Results saved to C:\MainMain\diag_out\iou045
+D1_4b10429375323247_jpg.rf.2106bb238ada77e354ff4861a532f33d.jpg [iou045] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045_agnostic
+D1_4b10429375323247_jpg.rf.2106bb238ada77e354ff4861a532f33d.jpg [iou045_agnostic] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045
+D1_4c40c429a5a070e8_jpg.rf.e6b36721b90b2f3b56a43312e59a2eed.jpg [iou045] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045_agnostic
+D1_4c40c429a5a070e8_jpg.rf.e6b36721b90b2f3b56a43312e59a2eed.jpg [iou045_agnostic] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045
+D1_4d62b3eed8f04f21_jpg.rf.88e97e734086e207cd4845411f5989f4.jpg [iou045] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045_agnostic
+D1_4d62b3eed8f04f21_jpg.rf.88e97e734086e207cd4845411f5989f4.jpg [iou045_agnostic] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045
+D1_5dc06abba45063b5_jpg.rf.507ac207d5cbc9895e8a722a9210a722.jpg [iou045] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045_agnostic
+D1_5dc06abba45063b5_jpg.rf.507ac207d5cbc9895e8a722a9210a722.jpg [iou045_agnostic] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045
+D1_6a03dd967d836a19_jpg.rf.1543ee37f3c848ffe8ca2cdd70879783.jpg [iou045] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045_agnostic
+D1_6a03dd967d836a19_jpg.rf.1543ee37f3c848ffe8ca2cdd70879783.jpg [iou045_agnostic] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045
+D1_6f276e419bd817e1_jpg.rf.3671f9cb028c749c0caa3d9a71c6e6ff.jpg [iou045] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045_agnostic
+D1_6f276e419bd817e1_jpg.rf.3671f9cb028c749c0caa3d9a71c6e6ff.jpg [iou045_agnostic] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045
+D1_7a1305c8e808290c_jpg.rf.07f18985154e78ad5d97a676c44a7ad7.jpg [iou045] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045_agnostic
+D1_7a1305c8e808290c_jpg.rf.07f18985154e78ad5d97a676c44a7ad7.jpg [iou045_agnostic] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045
+D1_7eeea1eb06c7de4f_jpg.rf.0e4af8c2677ba255a1e8180312b6e047.jpg [iou045] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045_agnostic
+D1_7eeea1eb06c7de4f_jpg.rf.0e4af8c2677ba255a1e8180312b6e047.jpg [iou045_agnostic] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045
+D1_7fa18bd0fbca2fe8_jpg.rf.4fb47fbdee76df27d26a959dc6121b51.jpg [iou045] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045_agnostic
+D1_7fa18bd0fbca2fe8_jpg.rf.4fb47fbdee76df27d26a959dc6121b51.jpg [iou045_agnostic] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045
+D1_8a5fca0fcf22fed1_jpg.rf.36dff3a6243a3d14eeba97c707db742f.jpg [iou045] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045_agnostic
+D1_8a5fca0fcf22fed1_jpg.rf.36dff3a6243a3d14eeba97c707db742f.jpg [iou045_agnostic] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045
+D1_8d425cb54d74abeb_jpg.rf.e45716da4984075cbab4546791f0be53.jpg [iou045] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045_agnostic
+D1_8d425cb54d74abeb_jpg.rf.e45716da4984075cbab4546791f0be53.jpg [iou045_agnostic] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045
+D1_9d3c9b88e091fd93_jpg.rf.edd86aafa1343418632d880febc03b8c.jpg [iou045] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+Results saved to C:\MainMain\diag_out\iou045_agnostic
+D1_9d3c9b88e091fd93_jpg.rf.edd86aafa1343418632d880febc03b8c.jpg [iou045_agnostic] n=0 overlap>0.5: samaKelas=0 bedaKelas=0
+```
+
+## Assistant:
+
+> 10/30/2026 12:32:52
+
+Hasil ini sangat informatif, dan arahnya jelas. Semua yang saya sebut di bawah dibaca langsung dari output teks dan 9 gambar hasil Anda.
+
+## Satu catatan tentang folder uji
+
+Output Anda memuat sekitar 35 gambar bernama `D1_...`, bukan hanya 5 sampai 8 yang saya minta. Gambar-gambar itu tampaknya berasal dari folder dataset (kemungkinan val atau train), jadi tidak ada gambar internet atau CCTV di dalamnya. Truk merah non-pemadam belum teruji. Tetapi hasilnya sudah cukup memberi jawaban untuk sebagian besar pertanyaan.
+
+## Terverifikasi dari output
+
+**1. Deteksi hampir selalu kosong atau salah.**
+Dari sekitar 35 gambar, **sekitar 22 gambar menghasilkan 0 deteksi** pada conf 0,10. Sisanya (sekitar 13 gambar) menghasilkan 1 sampai 4 kotak, dan hampir semuanya bernilai Fire_Truck atau Police_Car dengan confidence rendah (0,10 sampai 0,31). Hanya **satu deteksi** di atas 0,5 dari seluruh output.
+
+**2. Model tidak pernah menyebut Car, Motorcycle, Truck, Bus, atau Ambulance.** Dalam seluruh output hanya muncul dua nama kelas: Fire_Truck dan Police_Car. Ini cocok dengan AP nol pada empat kelas itu di evaluasi val dan test.
+
+**3. Kesalahannya kasat mata di gambar:**
+
+| Gambar | Prediksi model | Kenyataan |
+|---|---|---|
+| Bus kota (merah-putih) | Fire_Truck 0,66, plus 2 kotak Police_Car | Bus. Satu-satunya deteksi di atas 0,5, dan salah kelas |
+| Ambulans merah-putih | Fire_Truck 0,51, plus 3 kotak Fire_Truck lain | Ambulans. Kendaraannya terdeteksi, tetapi kelasnya salah |
+| Motor dengan pengendara berbaju oranye | Fire_Truck 0,11 | Motor |
+| Jalan salju dengan pickup | Fire_Truck 0,13 pada **etalase restoran** | Bukan kendaraan, dan pickup di depan tidak terdeteksi |
+| Mobil sport hijau | Tidak ada | Mobil |
+| Mobil biru klasik | Police_Car 0,15 pada kotak yang meleset | Mobil |
+| Motor di tempat parkir | Tidak ada | Motor |
+| Siluet motor di senja | Police_Car 0,11 pada **langit** | Dua motor |
+| Malam hari dengan lampu hias | Fire_Truck 0,20 pada area acak | Tidak ada kendaraan yang jelas |
+
+**4. Dugaan bias warna kini punya bukti perilaku, bukan hanya korelasi data.** Bus merah-putih dan ambulans merah-putih sama-sama menjadi Fire_Truck, sedangkan mobil hijau, motor hitam, dan mobil biru tidak menjadi Fire_Truck. Itu cocok dengan temuan sebelumnya bahwa 85% kotak Fire_Truck berwarna merah. Satu catatan jujur: motor di gambar kedua juga menjadi Fire_Truck dengan pengendara berbaju oranye-merah, yang sejalan dengan pola yang sama. Saya masih menyebut ini **kuat tetapi belum tuntas**, karena belum ada uji kontrol: truk merah non-pemadam, dan kendaraan pemadam non-merah.
+
+**5. Kotak berlebih: ada, tetapi bukan karena NMS.**
+- Pada ambulans, 4 kotak Fire_Truck dengan ukuran berbeda-beda (0,13 sampai 0,51) dan tumpang tindih sebagian. Pada bus, 2 kotak Fire_Truck plus 2 kotak Police_Car.
+- Skrip melaporkan `overlap>0.5` sama dengan 0 di **semua** gambar, termasuk yang punya 4 kotak. Artinya kotak-kotak itu tidak cukup mirip (IoU di atas 0,5) untuk dihapus NMS. Jadi NMS bekerja sesuai aturan, dan kotak itu memang lolos secara sah.
+- Hasil `iou045` dan `iou045_agnostic` **identik** di semua gambar. Mengaktifkan `agnostic_nms` tidak mengubah apa pun.
+- Karena itu sumber kotak berlebih adalah model: banyak prediksi dengan lokasi berbeda dan confidence rendah pada kendaraan yang sama. Itu ciri model yang belum yakin dan underfit.
+
+**6. Ini sudah terbukti tanpa GUI.** Gejala di CCTV (tidak mendeteksi, salah label Fire_Truck, banyak kotak) muncul persis sama pada inferensi langsung. Jadi GUI bukan penyebab utama.
+
+## Catatan kehati-hatian
+
+- Gambar di folder ini kemungkinan berasal dari dataset (prefix `D1_`). Saya tidak tahu apakah itu val atau train. Kalau itu gambar train, hasil seburuk ini berarti model bahkan belum menghafal data latihnya, yang konsisten dengan underfitting berat.
+- Saya hanya melihat 9 dari sekitar 35 gambar hasil. Angka "sekitar 22 kosong" saya hitung dari teks output, dan bisa meleset satu atau dua.
+- `conf=0.10` memang rendah. Itu sengaja untuk diagnosis, tetapi di GUI conf 0,15 hampir sama, jadi gejalanya tetap muncul di sana.
+
+## Diagnosis akhir tahap audit
+
+| Dugaan penyebab | Status |
+|---|---|
+| GUI / rendering | Bukan penyebab utama (gejala sama tanpa GUI) |
+| NMS | Bukan penyebab kotak berlebih (overlap 0, agnostic identik) |
+| Model undertrained | **Sangat kuat** (loss masih turun, mAP 0,095, recall rendah, 22 gambar kosong) |
+| Bias warna Fire_Truck | **Kuat** (data 85% merah, bus dan ambulans merah menjadi Fire_Truck) |
+| Label Truck/Car tidak konsisten | **Terbukti di data** (grid Truck, kontak Car) |
+| Domain shift CCTV | Masih hipotesis, belum diuji karena tidak ada screenshot CCTV |
+
+## Keputusan berikutnya
+
+Audit sudah cukup untuk menyatakan bahwa retraining dengan konfigurasi dan data yang sama tidak layak. Saya sarankan rencana ini, dan keputusan akhirnya di Anda:
+
+1. **Tetapkan definisi kelas dulu.** Terutama `Truck`: truk barang berat saja, atau pickup juga? Tanpa ini pembersihan label tidak bisa dimulai.
+2. **Bersihkan label.** Keluarkan atau pindahkan mobil pemadam yang berlabel Truck, ambulans militer, truk mainan, dan crop kabur dari Truck. Periksa label Car yang salah.
+3. **Tambah data bervariasi:** truk merah non-pemadam, pemadam non-merah jika ada, dan gambar CCTV atau sudut tinggi dengan kendaraan kecil. Test set tetap dipisah dan tidak disentuh.
+4. **Ubah konfigurasi training** supaya cukup langkah: LR dan jumlah langkah per epoch lebih besar, epoch lebih banyak, dan pertimbangkan bobot awal COCO yang sudah mengenal car, truck, bus, dan motorcycle. Angka persisnya saya tentukan setelah definisi kelas dan data jelas.
+
+Pertanyaan yang perlu Anda jawab dulu, cukup satu: **apakah `Truck` di sistem Anda berarti truk barang besar saja, atau termasuk pickup?** Dengan jawaban itu saya bisa menulis skrip pembersihan label yang aman, yang hanya menandai kandidat tanpa mengubah file asli.
+
+## User:
+
+> 10/30/2026 12:34:21
+
+1. Truck yang dimaksud adalah truck besar seperti kontainer dll, pickup tidak masuk
+2. bagaimana?
+3. berikan data2 tsbt karena selama ini saya hanya menggunakan yang sudah ada milik orang di website robo dan menggabung2kan yang terjadi malah error fatal
+4. bantu saya
+
+## Assistant:
+
+> 10/30/2026 12:35:04
+
+> Menyiapkan skrip peninjauan crop truk.
+>
+> - Menyiapkan skrip peninjauan crop truk.
+> - **Done**
+
+Saya hanya bisa memberi arah dan skrip. Saya tidak bisa mengunduh atau mengirim dataset, karena tidak punya akses internet untuk itu. Semua skrip di bawah belum saya uji.
+
+## 2. Membersihkan label (mulai dari Truck)
+
+Penyortiran harus dilakukan manual karena komputer tidak bisa membedakan pemadam, pickup, dan truk kontainer dengan andal. Jumlahnya hanya sekitar 96 crop, jadi bisa dikerjakan dalam sekitar 15 menit.
+
+**Alurnya:**
+1. Skrip A mengekspor setiap kotak berlabel Truck sebagai file gambar kecil ke folder `unsorted`.
+2. Anda memindahkan file-file itu lewat File Explorer ke salah satu folder: `keep_truck`, `to_fire_truck`, `to_car`, atau `delete`.
+3. Skrip B membuat **salinan baru** dataset (`SmartTraffic_Clean`) dengan label yang sudah diperbaiki. Dataset asli tidak diubah.
+
+Aturan sortir sesuai keputusan Anda:
+- Truk kontainer, tanker, truk bak besar, trailer: `keep_truck`
+- Mobil pemadam: `to_fire_truck`
+- Pickup dan SUV: `to_car` (kalau mau dibuang saja, taruh di `delete`)
+- Mainan, miniatur, crop buram atau gelap, crane dan alat berat: `delete`
+- Ambulans militer: `delete` (kasus aneh, lebih aman dibuang)
+- Ragu: biarkan di `unsorted`. Label itu tidak diubah.
+
+**Skrip A**, simpan sebagai `C:\MainMain\truck_export.py`:
+
+```python
+import yaml, cv2
+from pathlib import Path
+
+Y = Path(r"C:\MainMain\SmartTraffic_Final\dataset.yaml")
+cfg = yaml.safe_load(open(Y, encoding="utf-8"))
+root = Path(cfg.get("path", Y.parent))
+OUT = Path(r"C:\MainMain\review\truck")
+for d in ["unsorted", "keep_truck", "to_fire_truck", "to_car", "delete"]:
+    (OUT / d).mkdir(parents=True, exist_ok=True)
+exts = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
+n = 0
+for split in ["train", "val", "test"]:
+    idir = Path(cfg[split]); idir = idir if idir.is_absolute() else root / idir
+    ldir = Path(str(idir).replace("\\images\\", "\\labels\\").replace("/images/", "/labels/"))
+    s2i = {p.stem: p for p in idir.iterdir() if p.suffix.lower() in exts}
+    for lf in ldir.glob("*.txt"):
+        ip = s2i.get(lf.stem)
+        if ip is None: continue
+        img = None
+        for i, ln in enumerate(lf.read_text().splitlines()):
+            p = ln.split()
+            if len(p) < 5 or int(float(p[0])) != 5: continue
+            if img is None: img = cv2.imread(str(ip))
+            if img is None: break
+            H, W = img.shape[:2]
+            x, y, w, h = map(float, p[1:5])
+            x1, y1 = max(0, int((x-w/2)*W)), max(0, int((y-h/2)*H))
+            x2, y2 = min(W, int((x+w/2)*W)), min(H, int((y+h/2)*H))
+            crop = img[y1:y2, x1:x2]
+            if crop.size == 0: continue
+            cv2.imwrite(str(OUT / "unsorted" / f"{split}__{lf.stem}__{i}.jpg"), crop)
+            n += 1
+print("Crop Truck diekspor:", n, "->", OUT)
+```
+
+```
+"C:\Smart Traffic Light\.venv\Scripts\python.exe" C:\MainMain\truck_export.py
+```
+
+Buka `C:\MainMain\review\truck\unsorted` dengan tampilan ikon besar, lalu pindahkan file ke folder yang sesuai. Kabari saya kalau sudah selesai, dan saya kirim Skrip B. Skrip B sebaiknya saya tulis setelah Anda melihat struktur folder hasilnya, supaya cocok dengan penamaan file.
+
+Setelah Truck, label Car dan Ambulance perlu diaudit dengan cara serupa. Itu menyusul.
+
+## 3. Data: dari mana
+
+Sumber di bawah ini berasal dari ingatan saya. **Cek sendiri ketersediaan, lisensi, dan nama kelasnya**, karena bisa berubah.
+
+| Sumber | Berguna untuk | Catatan |
+|---|---|---|
+| **COCO 2017** | Car, Motorcycle, Bus, Truck | Besar dan bervariasi, kendaraan banyak yang kecil. Tidak ada kelas ambulans, pemadam, atau polisi. |
+| **UA-DETRAC** | Kendaraan dari sudut kamera tinggi | Paling mirip CCTV jalan raya, tetapi kelasnya car/bus/van/others dan perlu dipetakan. |
+| **BDD100K** | Lalu lintas dari dashcam | Ada car, bus, truck, motorcycle. Sudut pandangnya dashcam, bukan CCTV. |
+| **Open Images (via FiftyOne)** | Ambulance dan kendaraan darurat | Saya ingat ada kelas Ambulance. Kelas pemadam dan polisi belum pasti, cek dulu. |
+| **Roboflow Universe** | Kendaraan darurat tambahan | Cari "fire truck", "ambulance", "police car". Kualitas bervariasi, **audit dulu seperti yang kita lakukan**. |
+
+Kalau Anda mencari kendaraan merah non-pemadam, cari "truk kontainer merah", "truk barang", dan "bus merah" di sumber di atas.
+
+Yang paling penting adalah **frame dari CCTV Anda sendiri**. Dataset publik tidak mewakili sudut kamera dan kondisi lokasi Anda. Target awal sekitar 300 sampai 500 frame dari feed yang akan dipakai, diambil di jam dan cuaca berbeda. Saya bisa menuliskan skrip pengambil frame otomatis dari stream, jadi tidak perlu screenshot manual. Untuk melabeli, pakai Roboflow, CVAT, atau LabelImg. Anda bisa melabeli sedikit dulu, lalu memakai model terlatih untuk pra-label dan hanya mengoreksi hasilnya.
+
+**Soal error fatal saat menggabung dataset:** penyebab paling umum adalah ID kelas yang berbeda antar dataset. ID 0 di dataset A bisa berarti "car" dan di dataset B berarti "ambulance". Digabung begitu saja, label jadi salah semua. Saya akan menulis skrip penggabung yang **memetakan nama kelas ke urutan final 0 sampai 6**, membuang kelas yang tidak diperlukan, dan memberi awalan nama file supaya tidak bentrok. Untuk itu saya perlu tahu dataset mana yang Anda pilih dan isi `data.yaml` masing-masing.
+
+## 4. Rencana training ulang (arah, belum angka final)
+
+1. **Mulai dari bobot COCO**, bukan checkpoint transfer lama. Model COCO sudah mengenal car, truck, bus, dan motorcycle. Ultralytics mengunduhnya otomatis kalau komputer Anda online. Training Anda sebelumnya memakai `pretrained: false` dan mulai dari checkpoint yang val cls_loss awalnya sekitar 39, jadi awalan itu buruk.
+2. **Beri model lebih banyak langkah belajar.** Epoch lebih banyak, `lr0` lebih besar, dan `nbs` disesuaikan dengan batch, supaya jumlah langkah optimizer tidak hanya sekitar 1.400. Angka persisnya saya tentukan setelah data bersih.
+3. **Seimbangkan data:** kendaraan umum (Car, Motorcycle, Bus, Truck) tidak boleh hanya sekitar 100 objek per kelas, dan harus ada contoh kendaraan kecil seperti di CCTV.
+4. **Test set tetap dipisah** dan tidak boleh disentuh sampai evaluasi akhir.
+
+## Langkah cepat yang bisa Anda lakukan sekarang
+
+Sebagai pembanding, jalankan model COCO bawaan pada gambar uji Anda. Ini tidak memerlukan training:
+
+```
+"C:\Smart Traffic Light\.venv\Scripts\python.exe" -c "from ultralytics import YOLO; YOLO('yolov8n.pt').predict(r'C:\MainMain\diag_in', conf=0.25, save=True, project=r'C:\MainMain\diag_out', name='coco_baseline', exist_ok=True)"
+```
+
+Kalau gambar CCTV nanti tersedia, ini juga langsung memberi gambaran seberapa baik model COCO mendeteksi car, bus, truck, dan motorcycle tanpa training ulang. Kalau hasilnya jauh lebih baik, itu memperkuat rencana mulai dari COCO. Kirim satu atau dua gambar hasilnya.
+
+**Urutan yang saya sarankan:** (1) jalankan `truck_export.py` dan sortir, (2) jalankan tes COCO di atas, (3) beri tahu saya dataset tambahan yang dipilih. Kalau ada bagian yang masih membingungkan, tanyakan saja.
+
+## User:
+
+> 10/30/2026 12:36:50
+
+sekarang folder Mainmain ada di C:\LampuStres bersama dgn folder Smart Traffic Light yaitu folder GUI dan model2 sebelumnya yang juga cacat
+
+## Assistant:
+
+> 10/30/2026 12:37:08
+
+> Checking whether the moved Python environment still works.
+>
+> - Checking whether the moved Python environment still works.
+> - **Done**
+
+Oke, jadi lokasinya sekarang `C:\LampuStres\MainMain` dan `C:\LampuStres\Smart Traffic Light`. Semua skrip yang saya berikan sebelumnya masih memakai `C:\MainMain`, jadi harus disesuaikan. Dua hal lain juga bisa rusak karena folder dipindah. Saya menandai di bawah mana yang sudah pasti dan mana yang baru dugaan.
+
+## Yang bisa rusak setelah folder dipindah
+
+1. **Path di dalam skrip.** Semua skrip yang saya buat berisi `C:\MainMain\...`. Ini pasti gagal sampai diganti.
+2. **`path:` di `dataset.yaml`.** Kalau isinya path absolut lama (misalnya `C:\MainMain\SmartTraffic_Final`), Ultralytics tidak akan menemukan gambar. Ini dugaan, perlu dicek.
+3. **Virtual environment (`.venv`).** Venv Python menyimpan path lama di dalamnya, jadi `python.exe` kadang masih jalan, tetapi perintah seperti `pip` sering rusak setelah dipindah. Ini juga dugaan, perlu dites.
+
+Folder GUI dan model lama tidak perlu disentuh. Kita tetap memisahkannya dari eksperimen 7 kelas.
+
+## Cek dulu (jalankan satu per satu di CMD)
+
+```
+dir "C:\LampuStres"
+```
+
+```
+dir "C:\LampuStres\MainMain\SmartTraffic_Final"
+```
+
+```
+type "C:\LampuStres\MainMain\SmartTraffic_Final\dataset.yaml"
+```
+
+```
+"C:\LampuStres\Smart Traffic Light\.venv\Scripts\python.exe" -c "import ultralytics, cv2, yaml; print(ultralytics.__version__)"
+```
+
+Kirim keempat outputnya. Dari situ saya bisa lihat:
+- apakah nama folder persis seperti dugaan saya (huruf besar kecil dan spasi),
+- apakah `dataset.yaml` perlu diperbaiki,
+- apakah venv yang dipindah masih berfungsi.
+
+Kalau perintah keempat error, jangan panik. Solusinya membuat venv baru dan memasang `ultralytics` lagi. Saya pandu kalau memang diperlukan.
+
+## Mengganti path di skrip yang sudah Anda simpan
+
+Cara paling aman dan mudah:
+1. Buka skrip (misalnya `truck_export.py`) di Notepad.
+2. Tekan **Ctrl + H**.
+3. Isi "Find what" dengan `C:\MainMain` dan "Replace with" dengan `C:\LampuStres\MainMain`.
+4. Klik **Replace All**, lalu simpan.
+
+Lakukan untuk semua skrip: `audit_results.py`, `eval_split.py`, `audit_labels.py`, `audit_color.py`, `infer_diag.py`, dan `truck_export.py`. Pada perintah CMD juga, ganti interpreternya menjadi:
+
+```
+"C:\LampuStres\Smart Traffic Light\.venv\Scripts\python.exe"
+```
+
+Perhatikan juga file `args.yaml` hasil training lama. Isinya masih mencatat path lama, tetapi itu hanya catatan sejarah dan tidak perlu diubah.
+
+## Setelah cek selesai
+
+Begitu hasil keempat perintah masuk dan `dataset.yaml` beres, lanjutannya sama seperti rencana sebelumnya: jalankan `truck_export.py` (dengan path baru) untuk mulai menyortir crop Truck, lalu tes baseline COCO pada gambar uji. Skrip pembersih label dan penggabung dataset saya tulis dengan path `C:\LampuStres\MainMain` sejak awal, supaya tidak perlu diubah lagi.
+
+## User:
+
+> 10/30/2026 12:37:53
+
+Tidak ada perubahan apa2 sedari saya copas, berikan saja command dan py yang sebelumnya. Info tsbt adalah agar anda tidak salah dalam memberi instruksi terkait alamat file
+
+## Assistant:
+
+> 10/30/2026 12:38:10
+
+> Choosing which scripts to resend.
+>
+> - Choosing which scripts to resend.
+> - **Done**
+
+Baik, semua alamat di bawah sudah memakai `C:\LampuStres\MainMain` dan interpreter `C:\LampuStres\Smart Traffic Light\.venv\Scripts\python.exe`. Skrip belum saya uji.
+
+## 1. Ekspor crop Truck
+
+Simpan sebagai `C:\LampuStres\MainMain\truck_export.py`:
+
+```python
+import yaml, cv2
+from pathlib import Path
+
+Y = Path(r"C:\LampuStres\MainMain\SmartTraffic_Final\dataset.yaml")
+cfg = yaml.safe_load(open(Y, encoding="utf-8"))
+root = Path(cfg.get("path", Y.parent))
+if not root.exists():
+    root = Y.parent  # jaga-jaga jika path di yaml masih alamat lama
+
+OUT = Path(r"C:\LampuStres\MainMain\review\truck")
+for d in ["unsorted", "keep_truck", "to_fire_truck", "to_car", "delete"]:
+    (OUT / d).mkdir(parents=True, exist_ok=True)
+
+exts = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
+n = 0
+for split in ["train", "val", "test"]:
+    idir = Path(cfg[split]); idir = idir if idir.is_absolute() else root / idir
+    ldir = Path(str(idir).replace("\\images\\", "\\labels\\").replace("/images/", "/labels/"))
+    s2i = {p.stem: p for p in idir.iterdir() if p.suffix.lower() in exts}
+    for lf in ldir.glob("*.txt"):
+        ip = s2i.get(lf.stem)
+        if ip is None:
+            continue
+        img = None
+        for i, ln in enumerate(lf.read_text().splitlines()):
+            p = ln.split()
+            if len(p) < 5 or int(float(p[0])) != 5:
+                continue
+            if img is None:
+                img = cv2.imread(str(ip))
+            if img is None:
+                break
+            H, W = img.shape[:2]
+            x, y, w, h = map(float, p[1:5])
+            x1, y1 = max(0, int((x-w/2)*W)), max(0, int((y-h/2)*H))
+            x2, y2 = min(W, int((x+w/2)*W)), min(H, int((y+h/2)*H))
+            crop = img[y1:y2, x1:x2]
+            if crop.size == 0:
+                continue
+            cv2.imwrite(str(OUT / "unsorted" / f"{split}__{lf.stem}__{i}.jpg"), crop)
+            n += 1
+print("Crop Truck diekspor:", n, "->", OUT)
+```
+
+Jalankan:
+
+```
+"C:\LampuStres\Smart Traffic Light\.venv\Scripts\python.exe" "C:\LampuStres\MainMain\truck_export.py"
+```
+
+Lalu buka `C:\LampuStres\MainMain\review\truck\unsorted` dengan tampilan ikon besar. Pindahkan tiap gambar ke satu folder:
+
+- `keep_truck`: truk kontainer, tanker, truk bak besar, trailer
+- `to_fire_truck`: mobil pemadam
+- `to_car`: pickup dan SUV
+- `delete`: mainan, miniatur, crop buram atau gelap, crane dan alat berat, ambulans militer
+- Ragu: biarkan di `unsorted`, labelnya tidak diubah
+
+## 2. Baseline COCO tanpa training
+
+Perintah ini memakai folder `diag_in` yang sudah Anda isi. Komputer harus online, karena `yolov8n.pt` diunduh otomatis kalau belum ada.
+
+```
+"C:\LampuStres\Smart Traffic Light\.venv\Scripts\python.exe" -c "from ultralytics import YOLO; YOLO('yolov8n.pt').predict(r'C:\LampuStres\MainMain\diag_in', conf=0.25, save=True, project=r'C:\LampuStres\MainMain\diag_out', name='coco_baseline', exist_ok=True)"
+```
+
+Hasil gambarnya ada di `C:\LampuStres\MainMain\diag_out\coco_baseline`. Kirim satu atau dua gambar, terutama yang berisi bus, ambulans, dan motor. Dari situ kita bisa membandingkan langsung dengan hasil `ajasendiri.pt` pada gambar yang sama (bus merah-putih dan ambulans yang salah menjadi Fire_Truck).
+
+## Skrip lain
+
+Skrip audit sebelumnya (`audit_results.py`, `eval_split.py`, `audit_labels.py`, `audit_color.py`, `infer_diag.py`) sudah selesai dipakai, jadi tidak perlu dijalankan lagi. Kalau Anda butuh salah satunya dengan path baru, sebutkan namanya dan saya kirim versi lengkapnya.
+
+Kabari saya setelah crop Truck selesai disortir dan hasil COCO sudah ada. Setelah itu saya tulis skrip pembuat dataset bersih (`SmartTraffic_Clean`), yang hanya membuat salinan dan tidak mengubah dataset asli.
+
+## User:
+
+> 10/30/2026 12:39:38
+
+Jadi apa yang harus saya lakukan secara manual sekarang? dalam memberi respon jangan bertele2
+
+## Assistant:
+
+> 10/30/2026 12:39:44
+
+Lakukan 3 hal ini, berurutan:
+
+**1. Jalankan ekspor crop** (di CMD):
+```
+"C:\LampuStres\Smart Traffic Light\.venv\Scripts\python.exe" "C:\LampuStres\MainMain\truck_export.py"
+```
+(Simpan dulu kode `truck_export.py` dari pesan sebelumnya ke `C:\LampuStres\MainMain\truck_export.py`.)
+
+**2. Sortir manual crop Truck.** Buka `C:\LampuStres\MainMain\review\truck\unsorted`, pindahkan tiap gambar ke:
+- `keep_truck`: truk kontainer, tanker, truk bak besar, trailer
+- `to_fire_truck`: mobil pemadam
+- `to_car`: pickup dan SUV
+- `delete`: mainan, buram/gelap, crane/alat berat, ambulans militer
+- Ragu: biarkan
+
+**3. Jalankan baseline COCO** (komputer harus online):
+```
+"C:\LampuStres\Smart Traffic Light\.venv\Scripts\python.exe" -c "from ultralytics import YOLO; YOLO('yolov8n.pt').predict(r'C:\LampuStres\MainMain\diag_in', conf=0.25, save=True, project=r'C:\LampuStres\MainMain\diag_out', name='coco_baseline', exist_ok=True)"
+```
+
+**Kirim ke saya:** 1-2 gambar dari `diag_out\coco_baseline` (bus merah-putih dan ambulans), dan kabar kalau sortir Truck selesai.
+
+## User:
+
+> 10/30/2026 12:47:02
+
+The system cannot find the path specified.
+
+## Assistant:
+
+> 10/30/2026 12:47:06
+
+Pesan itu berarti ada path yang salah. Cek satu per satu, jalankan di CMD:
+
+```
+dir "C:\LampuStres\MainMain"
+```
+
+```
+dir "C:\LampuStres\Smart Traffic Light\.venv\Scripts\python.exe"
+```
+
+Kalau yang pertama error, folder `MainMain` tidak persis di situ (cek ejaan atau huruf besar kecil di `dir "C:\LampuStres"`).
+Kalau yang kedua error, venv ada di tempat lain atau namanya beda.
+
+Kirim output kedua perintah itu, plus perintah mana yang Anda jalankan saat error muncul (langkah 1, 2, atau 3), supaya saya tahu persis path mana yang bermasalah.
+
+## User:
+
+> 10/30/2026 12:47:37
+
+Directory of C:\LampuStres\MainMain
+
+10/30/2026  12:38 PM    <DIR>          .
+10/30/2026  12:41 PM    <DIR>          ..
+10/30/2026  05:59 AM    <DIR>          1
+10/30/2026  05:59 AM    <DIR>          2
+10/30/2026  06:12 AM    <DIR>          3
+10/30/2026  12:24 PM             2,112 audit_color.py
+10/30/2026  06:18 AM             4,228 audit_final.py
+10/30/2026  06:12 AM             4,057 audit_kualitas.py
+10/30/2026  12:21 PM             3,064 audit_labels.py
+10/30/2026  06:01 AM             1,673 audit_mainmain.py
+10/30/2026  12:24 PM    <DIR>          audit_out
+10/30/2026  06:17 AM             7,434 build_dataset_final.py
+10/30/2026  06:04 AM             2,529 cek_duplikasi_mainmain.py
+10/30/2026  06:14 AM               837 cek_format_label.py
+10/30/2026  12:31 PM    <DIR>          diag_in
+10/30/2026  12:31 PM    <DIR>          diag_out
+10/30/2026  12:17 PM               540 eval_split.py
+10/30/2026  12:24 PM             1,455 infer_diag.py
+10/30/2026  06:20 AM             1,123 inspect_checkpoint.py
+10/30/2026  06:15 AM             1,411 perbaiki_satu_polygon.py
+10/30/2026  12:38 PM    <DIR>          review
+10/30/2026  06:23 AM    <DIR>          SmartTraffic_Final
+10/30/2026  06:23 AM             1,266 train_final.py
+10/30/2026  06:21 AM             4,418 transfer_7kelas.py
+10/30/2026  12:38 PM             1,716 truck_export.py
+10/30/2026  06:22 AM               690 validasi_checkpoint.py
+              16 File(s)         38,553 bytes
+              10 Dir(s)  514,574,745,600 bytes free
+
+## Assistant:
+
+> 10/30/2026 12:47:43
+
+Folder `MainMain` ada, dan `truck_export.py` sudah tersimpan di dalamnya. Folder `review` juga sudah terbuat jam 12:38, jadi skrip itu kemungkinan sudah jalan sampai membuat folder. Artinya error "cannot find the path" kemungkinan bukan dari `MainMain`.
+
+Kandidat penyebab: path interpreter Python (perintah kedua belum Anda kirim hasilnya), atau `dataset.yaml` yang menunjuk ke alamat lama.
+
+Jalankan dua perintah ini, lalu kirim outputnya:
+
+```
+dir "C:\LampuStres\Smart Traffic Light\.venv\Scripts\python.exe"
+```
+
+```
+type "C:\LampuStres\MainMain\SmartTraffic_Final\dataset.yaml"
+```
+
+Satu lagi, jalankan skripnya dan kirim **seluruh teks error** (bukan hanya baris terakhir):
+
+```
+"C:\LampuStres\Smart Traffic Light\.venv\Scripts\python.exe" "C:\LampuStres\MainMain\truck_export.py"
+```
+
+Kalau error-nya `FileNotFoundError` dengan path tertentu di dalamnya, path itulah yang bermasalah. Cek juga isi `C:\LampuStres\MainMain\review\truck\unsorted`: kalau sudah ada gambar, ekspor sebenarnya berhasil dan Anda bisa langsung mulai menyortir.
+
+## User:
+
+> 10/30/2026 12:48:38
+
+Ini saya sudah kelar sortir lalu apa?
+
+## Assistant:
+
+> 10/30/2026 12:49:11
+
+> Menulis skrip penyalinan dan pemetaan jalur label.
+>
+> - Menulis skrip penyalinan dan pemetaan jalur label.
+> - **Done**
+
+Selanjutnya buat dataset bersih. Skrip ini hanya membuat **salinan** di `SmartTraffic_Clean`, dataset asli tidak disentuh. Skrip belum saya uji.
+
+## 1. Simpan sebagai `C:\LampuStres\MainMain\build_clean.py`
+
+```python
+import yaml, shutil, sys
+from pathlib import Path
+from collections import Counter
+
+SRC = Path(r"C:\LampuStres\MainMain\SmartTraffic_Final")
+DST = Path(r"C:\LampuStres\MainMain\SmartTraffic_Clean")
+REV = Path(r"C:\LampuStres\MainMain\review\truck")
+ACTION = {"keep_truck": 5, "to_fire_truck": 1, "to_car": 2, "delete": None}  # kelas baru; None = hapus baris
+
+if DST.exists():
+    sys.exit(f"{DST} sudah ada. Hapus dulu foldernya kalau ingin membuat ulang.")
+
+cfg = yaml.safe_load(open(SRC / "dataset.yaml", encoding="utf-8"))
+root = Path(cfg.get("path", SRC))
+if not root.is_absolute():
+    root = SRC / root
+if not root.exists():
+    root = SRC
+
+def to_dst(p):
+    parts = p.parts
+    for i, x in enumerate(parts):
+        if x.lower() == "smarttraffic_final":
+            return DST.joinpath(*parts[i + 1:])
+    raise ValueError(f"Path di luar SmartTraffic_Final: {p}")
+
+def dirs(split):
+    idir = Path(cfg[split]); idir = idir if idir.is_absolute() else root / idir
+    ldir = Path(str(idir).replace("\\images\\", "\\labels\\").replace("/images/", "/labels/"))
+    return to_dst(idir), to_dst(ldir)
+
+def count():
+    c = Counter()
+    for s in ["train", "val", "test"]:
+        for f in dirs(s)[1].glob("*.txt"):
+            for ln in f.read_text().splitlines():
+                p = ln.split()
+                if len(p) >= 5:
+                    c[int(float(p[0]))] += 1
+    return c
+
+print("Menyalin dataset (tanpa runs, cache, .pt)...")
+shutil.copytree(SRC, DST, ignore=shutil.ignore_patterns("runs", "*.cache", "*.pt"))
+
+before = count()
+
+edits = {}  # (split, stem) -> {idx: kelas_baru / None}
+for folder, newc in ACTION.items():
+    for f in (REV / folder).glob("*.jpg"):
+        split, rest = f.stem.split("__", 1)
+        stem, idx = rest.rsplit("__", 1)
+        edits.setdefault((split, stem), {})[int(idx)] = newc
+
+changed = Counter(); missing = 0
+for (split, stem), e in edits.items():
+    lf = dirs(split)[1] / f"{stem}.txt"
+    if not lf.exists():
+        missing += 1; continue
+    out = []
+    for i, ln in enumerate(lf.read_text().splitlines()):
+        p = ln.split()
+        if i in e and len(p) >= 5 and int(float(p[0])) == 5:
+            if e[i] is None:
+                changed["dihapus"] += 1; continue
+            p[0] = str(e[i]); ln = " ".join(p)
+            changed[f"jadi_kelas_{e[i]}"] += 1
+        out.append(ln)
+    lf.write_text("\n".join(out) + ("\n" if out else ""))
+
+new = dict(cfg)
+new["path"] = str(DST)
+for s in ["train", "val", "test"]:
+    if s in cfg:
+        new[s] = str(dirs(s)[0])
+with open(DST / "dataset_clean.yaml", "w", encoding="utf-8") as fh:
+    yaml.safe_dump(new, fh, allow_unicode=True, sort_keys=False)
+
+after = count()
+names = cfg["names"]; names = names if isinstance(names, dict) else dict(enumerate(names))
+print("\nPerubahan:", dict(changed), "| label file tidak ditemukan:", missing)
+print(f"{'kelas':12s} {'sebelum':>8s} {'sesudah':>8s}")
+for c in sorted(names):
+    print(f"{names[c]:12s} {before[c]:8d} {after[c]:8d}")
+print("\nYAML baru:", DST / "dataset_clean.yaml")
+```
+
+## 2. Jalankan
+
+```
+"C:\LampuStres\Smart Traffic Light\.venv\Scripts\python.exe" "C:\LampuStres\MainMain\build_clean.py"
+```
+
+Kirim seluruh outputnya. Yang saya cek: jumlah `dihapus`, `jadi_kelas_1`, `jadi_kelas_2` harus sesuai kira-kira dengan jumlah file di tiap folder sortir Anda, dan "label file tidak ditemukan" sebaiknya 0.
+
+## Catatan
+
+- Crop yang masih di `unsorted` labelnya tidak berubah.
+- Objek yang dihapus labelnya (mainan, buram, dll.) tetap ada di gambar tanpa label, jadi model menganggapnya background. Dampaknya kecil karena jumlahnya sedikit.
+- Label di split test juga ikut dibetulkan. Skor di dataset bersih tidak bisa dibandingkan persis dengan skor lama (0,095 dan 0,100).
+
+## Setelah itu
+
+1. Jalankan `audit_labels.py` pada `SmartTraffic_Clean` (saya kirim versi path barunya) untuk memastikan kelas Truck sekarang bersih.
+2. Audit label Car dengan cara yang sama (ekspor crop, sortir, bangun ulang).
+3. Baseline COCO: kalau sudah dijalankan, kirim 1-2 gambar hasilnya.
+
+## User:
+
+> 10/30/2026 12:50:48
+
+Perubahan: {'jadi_kelas_5': 62, 'jadi_kelas_2': 33, 'dihapus': 36, 'jadi_kelas_1': 5} | label file tidak ditemukan: 0
+kelas         sebelum  sesudah
+Ambulance         456      456
+Fire_Truck        614      619
+Car               651      684
+Motorcycle        140      140
+Police_Car        969      969
+Truck             136       62
+Bus               141      141
+
+YAML baru: C:\LampuStres\MainMain\SmartTraffic_Clean\dataset_clean.yaml
+
+```yaml
+path: C:\LampuStres\MainMain\SmartTraffic_Clean
+train: C:\LampuStres\MainMain\SmartTraffic_Clean\images\train
+val: C:\LampuStres\MainMain\SmartTraffic_Clean\images\valid
+test: C:\LampuStres\MainMain\SmartTraffic_Clean\images\test
+nc: 7
+names:
+- Ambulance
+- Fire_Truck
+- Car
+- Motorcycle
+- Police_Car
+- Truck
+- Bus
+```
+
+## Assistant:
+
+> 10/30/2026 12:50:58
+
+Skrip berjalan bersih. Label tidak ditemukan 0, dan total Truck 136 turun ke 62, sesuai hitungan 62+33+36+5 = 136. Pembersihan selesai, tetapi hasilnya memperlihatkan masalah baru.
+
+## Hasil
+
+| Kelas | Sebelum | Sesudah |
+|---|---|---|
+| Truck | 136 | **62** |
+| Car | 651 | 684 |
+| Fire_Truck | 614 | 619 |
+| Motorcycle | 140 | 140 |
+| Bus | 141 | 141 |
+
+Angka "sebelum" adalah total train+val+test, jadi lebih besar dari angka train di `labels.jpg`.
+
+**Masalah:** Truck sekarang hanya 62 objek di seluruh dataset, dan di split test kemungkinan tinggal sekitar 5. Sebelumnya 96 sudah terlalu sedikit untuk dipelajari. Membersihkan label membuat data bersih, tetapi tidak menambah data. Retraining pada dataset ini saja hampir pasti membuat Truck, Motorcycle (140), dan Bus (141) tetap lemah. Data tambahan wajib.
+
+## Langkah berikutnya
+
+**1. Verifikasi hasil bersih.** Salin `audit_labels.py` jadi `audit_labels_clean.py`, lalu di Notepad (Ctrl+H) ganti `C:\MainMain\SmartTraffic_Final\dataset.yaml` menjadi `C:\LampuStres\MainMain\SmartTraffic_Clean\dataset_clean.yaml`, dan `C:\MainMain\audit_out` menjadi `C:\LampuStres\MainMain\audit_out_clean`. Jalankan:
+
+```
+"C:\LampuStres\Smart Traffic Light\.venv\Scripts\python.exe" "C:\LampuStres\MainMain\audit_labels_clean.py"
+```
+
+Kirim tabelnya dan gambar `train_5_Truck.jpg`, `train_2_Car.jpg`.
+
+**2. Baseline COCO.** Anda belum mengirim hasilnya. Ini menentukan apakah kita mulai dari bobot COCO (saya kira ya). Jalankan:
+
+```
+"C:\LampuStres\Smart Traffic Light\.venv\Scripts\python.exe" -c "from ultralytics import YOLO; YOLO('yolov8n.pt').predict(r'C:\LampuStres\MainMain\diag_in', conf=0.25, save=True, project=r'C:\LampuStres\MainMain\diag_out', name='coco_baseline', exist_ok=True)"
+```
+
+Kirim 2 gambar dari `diag_out\coco_baseline` (bus dan ambulans).
+
+**3. Data tambahan untuk Truck, Bus, Motorcycle.** Saya tidak bisa mengunduh, jadi ini bagian Anda. Pilihan paling praktis: **COCO 2017** (kelas car, motorcycle, bus, truck). Ambil subset saja, bukan seluruh dataset, sekitar 500 gambar per kelas. Konfirmasi dulu kalau Anda sanggup mengunduhnya (ukuran dataset penuh puluhan GB; subset bisa lewat FiftyOne atau Roboflow Universe). Kalau sudah ada, kirim isi `data.yaml`-nya. Saya tulis skrip penggabung yang memetakan nama kelas ke urutan 0-6 supaya tidak terjadi error fatal seperti sebelumnya.
+
+Ingat, COCO tidak punya Ambulance, Fire_Truck, atau Police_Car, jadi kelas darurat tetap dari data yang ada.
+
+## User:
+
+> 10/30/2026 12:51:29
+
+saat memberikan command anda harus gunakan format cmd, seperti pyhton abc.py
+
+## Assistant:
+
+> 10/30/2026 12:51:36
+
+Baik, mulai sekarang semua perintah saya tulis dalam format CMD biasa: `python nama_skrip.py`.
+
+Supaya `python` langsung memakai interpreter yang benar (venv di folder `Smart Traffic Light`), lakukan satu kali setiap membuka CMD baru:
+
+```
+cd /d C:\LampuStres\MainMain
+```
+
+```
+"C:\LampuStres\Smart Traffic Light\.venv\Scripts\activate.bat"
+```
+
+Setelah itu prompt akan berawalan `(.venv)` dan perintahnya cukup pendek, tanpa path panjang. Satu catatan: karena venv ini dipindah folder, `activate.bat` kadang menunjuk path lama. Kalau setelah activate `python` tetap tidak mengenali `ultralytics`, cek dengan:
+
+```
+python -c "import ultralytics; print(ultralytics.__version__)"
+```
+
+Kalau error, kabari saya dan kita pakai path penuh seperti sebelumnya.
+
+## Perintah ulang (format baru)
+
+**1. Verifikasi dataset bersih.** Pastikan `audit_labels_clean.py` sudah dibuat (salin `audit_labels.py`, ganti path lewat Ctrl+H seperti pesan sebelumnya), lalu:
+
+```
+python audit_labels_clean.py
+```
+
+**2. Baseline COCO** (komputer harus online):
+
+```
+python -c "from ultralytics import YOLO; YOLO('yolov8n.pt').predict(r'C:\LampuStres\MainMain\diag_in', conf=0.25, save=True, project=r'C:\LampuStres\MainMain\diag_out', name='coco_baseline', exist_ok=True)"
+```
+
+Hasil gambar ada di `C:\LampuStres\MainMain\diag_out\coco_baseline`.
+
+## Yang saya tunggu
+
+- Tabel output `audit_labels_clean.py` beserta gambar `train_5_Truck.jpg` dan `train_2_Car.jpg` (di folder `audit_out_clean`).
+- 2 gambar dari `coco_baseline`: bus merah-putih dan ambulans.
+- Jawaban singkat: sanggup mengunduh subset COCO (car, motorcycle, bus, truck) atau tidak?
+
+## User:
+
+> 10/30/2026 12:52:10
+
+audit label clean py isinya apa?
+
+## Assistant:
+
+> 10/30/2026 12:52:21
+
+`audit_labels_clean.py` adalah salinan `audit_labels.py` dengan dua path diganti. Berikut versi lengkapnya, jadi Anda tidak perlu mengedit apa pun. Skrip belum saya uji.
+
+Simpan sebagai `C:\LampuStres\MainMain\audit_labels_clean.py`:
+
+```python
+import yaml, random, cv2, numpy as np
+from pathlib import Path
+from collections import defaultdict
+
+Y = Path(r"C:\LampuStres\MainMain\SmartTraffic_Clean\dataset_clean.yaml")
+cfg = yaml.safe_load(open(Y, encoding="utf-8"))
+root = Path(cfg.get("path", Y.parent))
+names = cfg["names"]
+names = names if isinstance(names, dict) else dict(enumerate(names))
+OUT = Path(r"C:\LampuStres\MainMain\audit_out_clean"); OUT.mkdir(exist_ok=True)
+random.seed(0)
+
+def img_dir(split):
+    p = Path(cfg[split])
+    return p if p.is_absolute() else root / p
+
+def lbl_dir(d):
+    s = str(d)
+    return Path(s.replace("\\images\\", "\\labels\\").replace("/images/", "/labels/"))
+
+def read_labels(f):
+    rows = []
+    for ln in f.read_text().splitlines():
+        p = ln.split()
+        if len(p) >= 5:
+            rows.append((int(float(p[0])), *map(float, p[1:5])))
+    return rows
+
+for split in ["train", "val", "test"]:
+    if split not in cfg:
+        continue
+    idir = img_dir(split); ldir = lbl_dir(idir)
+    files = list(ldir.glob("*.txt"))
+    stats = defaultdict(list); imgs = defaultdict(set); total = 0
+    for f in files:
+        for c, x, y, w, h in read_labels(f):
+            stats[c].append((w, h)); imgs[c].add(f); total += 1
+    print(f"\n=== {split}: {len(files)} file label, {total} objek, "
+          f"{total/max(len(files),1):.2f} objek/gambar ===")
+    print(f"{'kelas':12s} {'objek':>6s} {'gambar':>6s} {'med_w':>6s} {'med_h':>6s} {'%kecil(<1%)':>12s} {'%besar(>50%)':>13s}")
+    for c in sorted(names):
+        a = np.array(stats[c]) if stats[c] else np.zeros((0, 2))
+        if len(a) == 0:
+            print(f"{names[c]:12s} {0:6d}"); continue
+        area = a[:, 0] * a[:, 1]
+        print(f"{names[c]:12s} {len(a):6d} {len(imgs[c]):6d} {np.median(a[:,0]):6.2f} "
+              f"{np.median(a[:,1]):6.2f} {100*(area<0.01).mean():12.1f} {100*(area>0.5).mean():13.1f}")
+
+    if split != "train":
+        continue
+    stem2img = {p.stem: p for p in idir.iterdir() if p.suffix.lower() in {".jpg", ".jpeg", ".png", ".bmp", ".webp"}}
+    for c in sorted(names):
+        cand = [f for f in imgs[c] if f.stem in stem2img]
+        tiles = []
+        for f in random.sample(cand, min(12, len(cand))):
+            img = cv2.imread(str(stem2img[f.stem]))
+            if img is None:
+                continue
+            H, W = img.shape[:2]
+            th = max(2, W // 200)
+            for cc, x, y, w, h in read_labels(f):
+                if cc != c:
+                    continue
+                p1 = (int((x - w/2) * W), int((y - h/2) * H))
+                p2 = (int((x + w/2) * W), int((y + h/2) * H))
+                cv2.rectangle(img, p1, p2, (0, 255, 0), th)
+            tiles.append(cv2.resize(img, (320, 240)))
+        while tiles and len(tiles) < 12:
+            tiles.append(np.zeros((240, 320, 3), np.uint8))
+        if tiles:
+            rows = [np.hstack(tiles[i:i+4]) for i in range(0, 12, 4)]
+            cv2.imwrite(str(OUT / f"train_{c}_{names[c]}.jpg"), np.vstack(rows))
+print("\nSelesai. Lihat folder:", OUT)
+```
+
+Jalankan:
+
+```
+python audit_labels_clean.py
+```
+
+(Jalankan dari `C:\LampuStres\MainMain` dengan venv aktif, seperti langkah sebelumnya.)
+
+Skrip ini mencetak tabel jumlah objek, ukuran kotak, dan persentase objek kecil dan besar per kelas untuk train, val, dan test. Skrip juga membuat gambar kontak 12 sampel per kelas di `audit_out_clean`.
+
+Kirim tabelnya dan gambar `train_5_Truck.jpg` dan `train_2_Car.jpg`.
+
+## User:
+
+> 10/30/2026 12:53:44
+
+![train_0_Ambulance.jpg](https://claude.ai/api/0f6d4a8e-5d50-428b-9248-e31b1d903cb3/files/c7327da6-51ae-452f-9392-e19ad435e1cb/preview)
+
+![train_1_Fire_Truck.jpg](https://claude.ai/api/0f6d4a8e-5d50-428b-9248-e31b1d903cb3/files/72e51538-86f9-4fff-bafc-fa00a28e0d7c/preview)
+
+![train_2_Car.jpg](https://claude.ai/api/0f6d4a8e-5d50-428b-9248-e31b1d903cb3/files/e8372d67-5928-42f5-b020-4b3ee2c45254/preview)
+
+![train_3_Motorcycle.jpg](https://claude.ai/api/0f6d4a8e-5d50-428b-9248-e31b1d903cb3/files/004d61f8-a9e6-40f0-9e0e-d1b3c2e02eec/preview)
+
+![train_4_Police_Car.jpg](https://claude.ai/api/0f6d4a8e-5d50-428b-9248-e31b1d903cb3/files/98bdd72c-7b0e-42d0-b448-65fde107a76e/preview)
+
+![train_5_Truck.jpg](https://claude.ai/api/0f6d4a8e-5d50-428b-9248-e31b1d903cb3/files/45114f15-f6ff-4c87-81b0-fa8c8cf824c6/preview)
+
+![train_6_Bus.jpg](https://claude.ai/api/0f6d4a8e-5d50-428b-9248-e31b1d903cb3/files/3a817ccc-3603-4f36-959e-09532fd3a0b5/preview)
+
+=== train: 1816 file label, 2169 objek, 1.19 objek/gambar ===
+kelas         objek gambar  med_w  med_h  %kecil(<1%)  %besar(>50%)
+Ambulance       321    271   0.61   0.69          0.3          35.8
+Fire_Truck      439    377   0.76   0.64          0.2          47.8
+Car             480    202   0.20   0.18         24.8          10.8
+Motorcycle      101     63   0.34   0.46          5.0          24.8
+Police_Car      687    511   0.68   0.60          0.1          41.0
+Truck            42     34   0.57   0.50          4.8          35.7
+Bus              99     68   0.46   0.56          8.1          28.3
+
+=== val: 512 file label, 602 objek, 1.18 objek/gambar ===
+kelas         objek gambar  med_w  med_h  %kecil(<1%)  %besar(>50%)
+Ambulance        96     83   0.58   0.68          0.0          39.6
+Fire_Truck      129    113   0.79   0.66          0.0          56.6
+Car             129     53   0.21   0.21         20.2          10.9
+Motorcycle       23     21   0.66   0.57          0.0          30.4
+Police_Car      190    135   0.59   0.56          1.1          37.4
+Truck            12     10   0.48   0.53          0.0           8.3
+Bus              23     15   0.52   0.69          0.0          34.8
+
+=== test: 247 file label, 300 objek, 1.21 objek/gambar ===
+kelas         objek gambar  med_w  med_h  %kecil(<1%)  %besar(>50%)
+Ambulance        39     37   0.65   0.64          0.0          38.5
+Fire_Truck       51     46   0.83   0.68          0.0          58.8
+Car              75     30   0.18   0.13         32.0           9.3
+Motorcycle       16      6   0.27   0.38         12.5          18.8
+Police_Car       92     71   0.71   0.64          0.0          44.6
+Truck             8      6   0.70   0.45          0.0          37.5
+Bus              19     11   0.49   0.56          5.3          31.6
+
+Selesai. Lihat folder: C:\LampuStres\MainMain\audit_out_clean
+
+## Assistant:
+
+> 10/30/2026 12:54:01
+
+Skrip berjalan, dan sebagian pembersihan terlihat berhasil. Tetapi gambar kontak menunjukkan label yang masih salah, dan jumlah data Truck sekarang terlalu sedikit.
+
+## Terverifikasi dari tabel
+
+| Kelas | Train | Val | Test |
+|---|---|---|---|
+| Truck | 42 | 12 | 8 |
+| Car | 480 | 129 | 75 |
+| Fire_Truck | 439 | 129 | 51 |
+| Motorcycle | 101 | 23 | 16 |
+| Bus | 99 | 23 | 19 |
+
+Perubahan ini cocok dengan skrip pembersih. Truck turun dari 96 ke 42 di train. **Truck 42 train / 12 val / 8 test tidak cukup untuk dipelajari atau diukur.** Satu kesalahan di test bisa menggeser skor kelas ini belasan persen.
+
+## Terlihat di gambar kontak (12 sampel per kelas, jadi bukan audit penuh)
+
+**Truck, masih ada label salah:**
+- Pickup merah di tile pertama (seharusnya `to_car` atau `delete`).
+- Mobil pemadam "LOPEZ ISLAND" di tile ketiga (seharusnya `to_fire_truck`).
+- Van box abu-abu kecil, truk IBM "Make: Permission to Play" yang tampak seperti van modifikasi, dan kendaraan konstruksi di pojok kanan atas tile keempat.
+- Sisanya (truk kayu, trailer kontainer, tanker "JET", truk kepala CAT, truk Kay Transport) adalah truk besar yang benar.
+
+Artinya sortir manual Anda belum menangkap semuanya. Ini bisa terjadi karena crop di `unsorted` yang tersisa tidak diubah. Cek folder `review\truck\unsorted`: kalau masih ada file di sana, itulah sisa label lama.
+
+**Car:** masih mencampur mobil klasik, close-up gril, go-kart kuning, iklan majalah, dan mobil di etalase. Sebagian besar valid sebagai "mobil", tetapi go-kart dan close-up gril sebaiknya dibuang.
+
+**Bus:** tile "KUNG FU TACOS" (food truck kuning) dan tile kursi bagian dalam bus jelas bukan bus yang berguna. Bus lainnya bagus.
+
+**Ambulance, Fire_Truck, Police_Car:** bersih. Ada satu ambulans kuning berlabel Police_Car (baris 2, kolom 4 di gambar Police_Car) dan Fire_Truck pun tampak konsisten.
+
+**Motorcycle:** konvensi kotak campur (sebagian termasuk pengendara, sebagian hanya motor, ada render CGI dan kotak yang tidak jelas di pojok).
+
+## Hal yang belum berubah (sama seperti diagnosis awal)
+
+Semua kendaraan darurat tetap berukuran besar dan close-up, sedangkan Car kecil. Kendaraan merah di data masih hampir seluruhnya Fire_Truck. Sortir Truck tidak menyelesaikan bias warna, hanya mengurangi kontradiksi label.
+
+## Kesimpulan
+
+Dataset ini lebih bersih, tetapi **belum cukup untuk retraining yang layak**. Kekurangan utama bukan di label lagi, melainkan di jumlah dan variasi data untuk Truck, Bus, Motorcycle, dan kendaraan kecil ala CCTV. Retraining dengan data ini saja akan mengulang hasil buruk pada empat kelas itu.
+
+## Langkah berikutnya
+
+**1. Jalankan baseline COCO** (belum ada hasilnya dari Anda):
+
+```
+python -c "from ultralytics import YOLO; YOLO('yolov8n.pt').predict(r'C:\LampuStres\MainMain\diag_in', conf=0.25, save=True, project=r'C:\LampuStres\MainMain\diag_out', name='coco_baseline', exist_ok=True)"
+```
+
+Kirim 2 gambar dari `diag_out\coco_baseline` (bus merah-putih dan ambulans). Hasil ini menentukan apakah kita mulai dari bobot COCO, dan menurut saya hampir pasti ya.
+
+**2. Jawab satu hal:** apakah Anda bisa mengunduh dataset tambahan (COCO subset, UA-DETRAC, atau BDD100K)? Kalau iya, pilih salah satu, dan saya tulis skrip penggabung dengan pemetaan kelas 0-6.
+
+**3. Sortir sisa label.** Opsional tapi berguna: pindahkan sisa crop yang salah di atas (pickup merah, pemadam, van, food truck) dan jalankan ulang `build_clean.py` setelah menghapus folder `SmartTraffic_Clean`. Saya bisa menambahkan folder `delete` yang sama untuk Car dan Bus kalau Anda mau.
+
+Kalau Anda ingin cepat, urutan terbaik adalah nomor 1, lalu nomor 2. Nomor 3 bisa menyusul.
+
+## User:
+
+> 10/30/2026 12:56:56
+
+```text
+image 1/30 C:\LampuStres\MainMain\diag_in\D1_0013d97a44c586c0_jpg.rf.c129e0f75e464334397783e12eeddd69.jpg: 640x640 8 persons, 6 cars, 110.2ms
+image 2/30 C:\LampuStres\MainMain\diag_in\D1_07a108f07e99070b_jpg.rf.319BfYKHczTQNiU3Rv20.jpg: 640x640 2 persons, 31.1ms
+image 3/30 C:\LampuStres\MainMain\diag_in\D1_07d61c5699b6f4da_jpg.rf.c91a31a6ac5fcc72f98ba6b6e7585168.jpg: 640x640 4 persons, 29.8ms
+image 4/30 C:\LampuStres\MainMain\diag_in\D1_0a836954ceeac15f_jpg.rf.7f4bcc9a1e1d2db7dabcd6676a2ac8af.jpg: 640x640 (no detections), 29.8ms
+image 5/30 C:\LampuStres\MainMain\diag_in\D1_0b5890eed288c58e_jpg.rf.f328eddd47ca0245af243fe116dd26f8.jpg: 640x640 1 bus, 30.1ms
+image 6/30 C:\LampuStres\MainMain\diag_in\D1_0c50d905a9db3118_jpg.rf.42b17615f7055ea54f5c6eb706c91f9c.jpg: 640x640 1 person, 3 cars, 2 trucks, 30.0ms
+image 7/30 C:\LampuStres\MainMain\diag_in\D1_11b0e2dddc393e74_jpg.rf.58418e3bb1d6a4f0232dbce9bc7dde39.jpg: 640x640 1 person, 1 motorcycle, 29.8ms
+image 8/30 C:\LampuStres\MainMain\diag_in\D1_13b1404f87507b51_jpg.rf.4bf682cfa4c84cff502d30594ce7f6fa.jpg: 640x640 1 car, 1 bus, 1 truck, 29.8ms
+image 9/30 C:\LampuStres\MainMain\diag_in\D1_1d3c0507e127f1ea_jpg.rf.2c6a1e3b13c7582a2072e3204c8f010d.jpg: 640x640 1 person, 1 motorcycle, 29.5ms
+image 10/30 C:\LampuStres\MainMain\diag_in\D1_1f133e6ee29e99d0_jpg.rf.c3edd22ab67ab12d42c66fc9e14c0a1f.jpg: 640x640 2 persons, 1 bus, 28.6ms
+image 11/30 C:\LampuStres\MainMain\diag_in\D1_25ceb16e759fbc8e_jpg.rf.868d326b2b6f4aa6a69ecde979206809.jpg: 640x640 1 motorcycle, 30.0ms
+image 12/30 C:\LampuStres\MainMain\diag_in\D1_28e0b4c029d15510_jpg.rf.a46965768162850af366ec3c676879f1.jpg: 640x640 3 persons, 2 cars, 30.2ms
+image 13/30 C:\LampuStres\MainMain\diag_in\D1_2b06ed2955aa861d_jpg.rf.79b1cc8ca28f1097bfd95e086021e7e0.jpg: 640x640 1 truck, 30.3ms
+image 14/30 C:\LampuStres\MainMain\diag_in\D1_2ddd5c87ecbc6060_jpg.rf.34b347e8629726c7485bbec07d2e4a55.jpg: 640x640 1 motorcycle, 30.0ms
+image 15/30 C:\LampuStres\MainMain\diag_in\D1_3a2a06b1d3705da9_jpg.rf.2d7bec38f174007fdee862e87a0681be.jpg: 640x640 1 person, 3 cars, 30.2ms
+image 16/30 C:\LampuStres\MainMain\diag_in\D1_3dd95762b8a9c4a9_jpg.rf.3647a732c5384fea27fdd145634b9ed6.jpg: 640x640 5 persons, 2 cars, 1 motorcycle, 29.3ms
+image 17/30 C:\LampuStres\MainMain\diag_in\D1_4a11e1503e4317a1_jpg.rf.96844f77383a8af09e82a815f222df0e.jpg: 640x640 1 bus, 30.5ms
+image 18/30 C:\LampuStres\MainMain\diag_in\D1_4a132f56869e2ade_jpg.rf.83KWRSVfUPoQaoOtVBGh.jpg: 640x640 10 persons, 3 motorcycles, 1 truck, 30.3ms
+image 19/30 C:\LampuStres\MainMain\diag_in\D1_4b10429375323247_jpg.rf.2106bb238ada77e354ff4861a532f33d.jpg: 640x640 1 car, 3 trucks, 30.1ms
+image 20/30 C:\LampuStres\MainMain\diag_in\D1_4c40c429a5a070e8_jpg.rf.e6b36721b90b2f3b56a43312e59a2eed.jpg: 640x640 1 car, 30.8ms
+image 21/30 C:\LampuStres\MainMain\diag_in\D1_4d62b3eed8f04f21_jpg.rf.88e97e734086e207cd4845411f5989f4.jpg: 640x640 1 truck, 29.1ms
+image 22/30 C:\LampuStres\MainMain\diag_in\D1_5dc06abba45063b5_jpg.rf.507ac207d5cbc9895e8a722a9210a722.jpg: 640x640 2 persons, 2 cars, 1 truck, 29.8ms
+image 23/30 C:\LampuStres\MainMain\diag_in\D1_6a03dd967d836a19_jpg.rf.1543ee37f3c848ffe8ca2cdd70879783.jpg: 640x640 3 persons, 2 cars, 3 trucks, 29.6ms
+image 24/30 C:\LampuStres\MainMain\diag_in\D1_6f276e419bd817e1_jpg.rf.3671f9cb028c749c0caa3d9a71c6e6ff.jpg: 640x640 4 persons, 1 motorcycle, 31.0ms
+image 25/30 C:\LampuStres\MainMain\diag_in\D1_7a1305c8e808290c_jpg.rf.07f18985154e78ad5d97a676c44a7ad7.jpg: 640x640 3 persons, 3 cars, 30.0ms
+image 26/30 C:\LampuStres\MainMain\diag_in\D1_7eeea1eb06c7de4f_jpg.rf.0e4af8c2677ba255a1e8180312b6e047.jpg: 640x640 1 car, 30.0ms
+image 27/30 C:\LampuStres\MainMain\diag_in\D1_7fa18bd0fbca2fe8_jpg.rf.4fb47fbdee76df27d26a959dc6121b51.jpg: 640x640 1 person, 1 truck, 32.5ms
+image 28/30 C:\LampuStres\MainMain\diag_in\D1_8a5fca0fcf22fed1_jpg.rf.36dff3a6243a3d14eeba97c707db742f.jpg: 640x640 1 car, 1 truck, 32.0ms
+image 29/30 C:\LampuStres\MainMain\diag_in\D1_8d425cb54d74abeb_jpg.rf.e45716da4984075cbab4546791f0be53.jpg: 640x640 1 person, 1 car, 1 motorcycle, 29.5ms
+image 30/30 C:\LampuStres\MainMain\diag_in\D1_9d3c9b88e091fd93_jpg.rf.edd86aafa1343418632d880febc03b8c.jpg: 640x640 1 motorcycle, 32.6ms
+Speed: 2.6ms preprocess, 32.9ms inference, 1.5ms postprocess per image at shape (1, 3, 640, 640)
+Results saved to C:\LampuStres\MainMain\diag_out\coco_baseline
+```
+
+Pickup merah di tile pertama (seharusnya `to_car` atau `delete`).
+itu emang saya masukkan ke truck tadi
+Mobil pemadam “LOPEZ ISLAND” di tile ketiga (seharusnya `to_fire_truck`).
+saya memang salah masukkan karena saya kira truck biasa
+
+## Assistant:
+
+> 10/30/2026 12:57:18
+
+> Checking the COCO baseline detections against each image.
+>
+> - Checking the COCO baseline detections against each image.
+> - **Done**
+
+Terima kasih, itu meluruskan dugaan saya. Dua label itu bukan kegagalan skrip, jadi tidak ada yang perlu diperbaiki di skripnya.
+
+- **Pickup merah:** sesuai definisi Anda ("pickup tidak masuk Truck"), ini harus pindah ke `to_car`.
+- **Mobil pemadam LOPEZ ISLAND:** pindahkan ke `to_fire_truck`.
+
+## Hasil baseline COCO
+
+Saya hanya membaca teks output, belum melihat gambar hasilnya. Gambar yang dipakai sama dengan yang tadi salah di `ajasendiri.pt`, tetapi confidence-nya 0,25, bukan 0,10.
+
+| Gambar | `ajasendiri.pt` | COCO `yolov8n` |
+|---|---|---|
+| Bus merah-putih | Fire_Truck 0,66, plus kotak Police_Car | **1 bus** (benar) |
+| Ambulans merah-putih | 4 kotak Fire_Truck | 1 car, 1 bus, 1 truck (kendaraan ketemu, kelasnya bingung) |
+| Motor dengan pengendara oranye | Fire_Truck 0,11 | **1 person, 1 motorcycle** (benar) |
+| Motor parkir | Tidak ada | **1 motorcycle** (benar) |
+| Mobil sport hijau | Tidak ada | **1 car** (benar) |
+| Mobil biru klasik | Police_Car di kotak meleset | 3 car (kemungkinan termasuk mobil di sekitarnya) |
+| Jalan salju dengan pickup | Fire_Truck pada etalase restoran | 3 car, 2 truck (tidak ada kotak pada etalase) |
+
+**Kesimpulan:**
+- Dari 30 gambar, hanya 1 yang kosong. Model lama kosong di sekitar 22 dari 35 gambar.
+- COCO tidak salah memberi label Fire_Truck pada bus merah.
+- Bukti ini mendukung rencana mulai dari bobot COCO. Model COCO sudah bisa mendeteksi car, bus, truck, dan motorcycle pada gambar yang sama.
+- Ambulans sebagai "car/bus/truck" memang wajar, karena COCO tidak punya kelas ambulans, pemadam, atau polisi. Kelas darurat tetap harus dilatih dari data Anda.
+
+Catatan: hasil ini hanya pada 30 gambar dari dataset Anda, belum dari CCTV, jadi belum membuktikan performa di CCTV.
+
+## Yang perlu Anda lakukan
+
+1. Buka `C:\LampuStres\MainMain\review\truck\keep_truck` (isinya sekitar 62 file). Pindahkan pickup ke `to_car` dan mobil pemadam ke `to_fire_truck`. Pastikan juga van box kecil dan food truck/kendaraan konstruksi, kalau ada, masuk `delete`.
+2. Hapus salinan lama lalu bangun ulang. Perintah ini hanya menghapus `SmartTraffic_Clean`, bukan dataset asli:
+
+```
+rmdir /s /q C:\LampuStres\MainMain\SmartTraffic_Clean
+```
+
+```
+python build_clean.py
+```
+
+3. Jawab satu hal: **apakah Anda bisa mengunduh dataset tambahan?** Jumlah Truck setelah ini akan turun lagi, sehingga data tambahan (misalnya subset COCO untuk car, bus, truck, motorcycle) tetap wajib. Setelah Anda jawab, saya tulis skrip penggabung dan konfigurasi training dari `yolov8n.pt`.
+
+## User:
+
+> 10/30/2026 13:01:55
+
+Carikan untuk dataset yang diperlukan tsbt, berikan link2 yang terkait!
+
+## Assistant:
+
+> 10/30/2026 13:02:26
+
+Saya cari dulu supaya link-nya valid, bukan dari ingatan.
+
+> Searched the web
+>
+> - COCO 2017 dataset download official
+> - Roboflow Universe fire truck ambulance police car vehicle detection dataset
+> - UA-DETRAC dataset download vehicle detection traffic camera
+> - BDD100K dataset download bdd-data.berkeley.edu object detection
+> - **Done**
+
+Ini link yang saya dapat dari pencarian. Saya belum membuka isi tiap dataset, jadi jumlah gambar dan kualitas labelnya belum saya periksa. **Audit dulu dengan skrip yang sama seperti sebelumnya**, karena dataset Roboflow Anda yang lama justru sumber masalah label.
+
+## A. Untuk Car, Truck, Bus, Motorcycle (kendaraan umum)
+
+| Dataset | Isi | Link |
+|---|---|---|
+| **COCO 2017** | Kelas car, motorcycle, bus, truck. Lisensi CC-BY-4.0, penuh sekitar 25 GB. | http://cocodataset.org |
+| **COCO via FiftyOne (subset)** | Bisa mengunduh sebagian saja (per kelas, `max_samples`), jadi tidak perlu 25 GB. | https://docs.voxel51.com/dataset_zoo/datasets/coco_2017.html |
+| **UA-DETRAC (versi YOLO di HuggingFace)** | 23.319 gambar CCTV persimpangan, format YOLO, kelas car/bus/truck/van, resolusi 640x640. Lisensi CC-BY-4.0. | https://huggingface.co/datasets/thundarstrom/traffic-vehicle-detection |
+| **UA-DETRAC (asli, mirror Zenodo)** | 11,8 GB. | https://zenodo.org/records/14030107 |
+| **BDD100K** | Sudut dashcam. Kelas bus, car, motor, truck. Lisensi non-komersial, perlu daftar akun. | https://bdd-data.berkeley.edu/ |
+| **BDD100K versi YOLO (HuggingFace, tidak resmi)** | Sudah dalam format YOLO, 79.863 gambar. | https://huggingface.co/datasets/ChaymaeRami/BDD100kSubset |
+| **SentinelEdge (CCTV Bengaluru + UA-DETRAC)** | Termasuk CCTV kota dengan banyak motor dan kendaraan berat, format COCO JSON. | https://huggingface.co/datasets/kalyan1729/sentineledgedataset |
+
+**Rekomendasi saya (belum diuji):**
+- **UA-DETRAC versi YOLO** paling cocok untuk CCTV Anda, karena sudut dan ukuran kendaraannya mirip. Kelasnya tidak punya motorcycle, jadi motor harus dari sumber lain.
+- **COCO subset** untuk Motorcycle, Truck, Bus, dan Car yang bervariasi.
+- Catatan: kelas `van` di UA-DETRAC tidak ada di daftar Anda. Kita putuskan nanti, dipetakan ke Car atau dibuang.
+
+## B. Untuk Ambulance, Fire_Truck, Police_Car
+
+Dataset Anda saat ini hampir semuanya gaya Rusia dan merah. Yang di bawah bisa menambah variasi, tetapi **saya belum melihat kualitas atau variasinya**:
+
+| Dataset | Kelas | Link |
+|---|---|---|
+| Emergency_Vehicle_Detection | ambulance, fire truck, police car (CC BY 4.0) | https://universe.roboflow.com/rakshuworkspace/emergency_vehicle_detection-eombg |
+| Emergency_Vehicle | Ambulance, Fire-Truck, Police-car, normal-car (CC BY 4.0) | https://universe.roboflow.com/shikha-eavtx/emergency_vehicle |
+| ambulance police firetruck | sekitar 6 ribu gambar | https://universe.roboflow.com/detection-cars/ambulance-police-firetruck |
+| 3car | police car, ambulance, fire truck | https://universe.roboflow.com/traffic-5iwkb/3car |
+| detect car | car, firetruck, ambulance | https://universe.roboflow.com/chassis-detector/detect-car-cbgi4-41lcp |
+| Vehicle_Last | Truck, Bus, Ambulance, Sedan (CC BY 4.0) | https://universe.roboflow.com/samuellee1312-gmail-com/vehicle_last |
+
+Peringatan: sebagian dataset ini mungkin sudah menjadi bagian dari Dataset 1 atau 3 Anda, jadi bisa jadi duplikat. Cek duplikasi dengan `cek_duplikasi_mainmain.py` sebelum menggabung. Dua kelas lain di dataset lain (`ambulance_on`, `firetruck_off`) berbeda arti, jangan dipakai tanpa dilihat dulu.
+
+## C. Yang paling penting: frame dari CCTV Anda sendiri
+
+Tidak ada dataset publik yang bisa menggantikan ini. Karena Anda tidak sempat mengambil screenshot, saya bisa menulis skrip yang mengambil frame otomatis dari stream CCTV, satu frame tiap beberapa detik, dan menyimpannya ke folder. Target awal sekitar 300 frame di jam dan cuaca berbeda.
+
+## Urutan yang saya sarankan
+
+1. Unduh **UA-DETRAC versi YOLO** (HuggingFace, paling mudah karena sudah format YOLO) dan **subset COCO** untuk motorcycle, truck, bus.
+2. Kirim isi `data.yaml` kedua dataset itu ke saya. Dari sana saya tulis skrip penggabung yang memetakan nama kelas ke urutan 0-6 supaya tidak terjadi error fatal seperti sebelumnya.
+3. Untuk kelas darurat, unduh 1-2 dataset dari tabel B, audit dengan `audit_labels.py`, baru gabung.
+
+Perlu Anda tahu: untuk UA-DETRAC saya baru melihat deskripsinya. Saya belum tahu struktur folder dan isi `data.yaml`-nya, jadi skrip penggabung belum bisa ditulis sebelum Anda mengirimnya.
+
+---
+
+**Sources:**
+
+- [coco 2017](https://docs.voxel51.com/dataset_zoo/datasets/coco_2017.html)
+- [# COCO 2017 dataset http://cocodataset.org | |](https://huggingface.co/spaces/shengzi/yolov7/blob/main/scripts/get_coco.sh)
+- [get coco](https://huggingface.co/spaces/Agri-Tech/Testing-Pipeline-API/blob/refs%2Fpr%2F15/ultralytics/data/scripts/get_coco.sh)
+- [Published February 4, 2024](https://scidata.sjtu.edu.cn/records/7rp0x-d6e31)
+- [get coco](https://huggingface.co/spaces/AjaykumarPilla/DRS/blob/main/yolov5/data/scripts/get_coco.sh)
+- [docs.rcac.purdue.edu](https://docs.rcac.purdue.edu/datasets/ai/COCO/)
+- [datasetdocs.readthedocs.io](https://datasetdocs.readthedocs.io/en/latest/ai/COCO.html)
+- [huggingface.co](https://huggingface.co/ParastooC/yolov7/raw/main/coco.yaml)
+- [- Description:](https://tensorflow.google.cn/datasets/catalog/coco)
+- [BenchmarkECCV 2014Microsoft Research](https://www.codesota.com/benchmark/coco)
+- [Emergency_Vehicle_Detection Computer Vision Project](https://universe.roboflow.com/rakshuworkspace/emergency_vehicle_detection-eombg)
+- [Emergency_Vehicle Computer Vision Project](https://universe.roboflow.com/shikha-eavtx/emergency_vehicle)
+- [3car Computer Vision Dataset](https://universe.roboflow.com/traffic-5iwkb/3car)
+- [ambulance police firetruck Computer Vision Project](https://universe.roboflow.com/detection-cars/ambulance-police-firetruck)
+- [detect car Computer Vision Dataset](https://universe.roboflow.com/chassis-detector/detect-car-cbgi4-41lcp)
+- [Vehicle_Last Computer Vision Dataset](https://universe.roboflow.com/samuellee1312-gmail-com/vehicle_last)
+- [emergency vehicle Computer Vision Project](https://universe.roboflow.com/yolo-kq5kl/emergency-vehicle-huwpm)
+- [traffic vehicle detection](https://huggingface.co/datasets/thundarstrom/traffic-vehicle-detection)
+- [Dataset Viewer](https://huggingface.co/datasets/kalyan1729/sentineledgedataset)
+- [UA-DETRAC: A New Benchmark and Protocol for Multi-Object Detection and Tracking](https://alphaxiv.org/abs/1511.04136)
+- [Datasets for tracking](https://papers.readthedocs.io/en/latest/datasets/tracking/)
+- [Ming-Ching Chang image](https://www.albany.edu/faculty/mchang2/chang_download.html)
+- [Published November 3, 2024 | Version v1](https://zenodo.org/records/14030107)
+- [arxiv.org](https://arxiv.org/pdf/1511.04136.pdf)
+- [huggingface.co](https://huggingface.co/datasets/ChaymaeRami/BDD100kSubset)
+- [BDD100K: Database of driving videos for self driving cars AI](https://www.labellerr.com/blog/bdd100k-a-huge-database-of-diverse-driving-videos/amp/)
+- [BDD100K: Database of driving videos for self driving cars AI](https://labellerr.com/blog/bdd100k-a-huge-database-of-diverse-driving-videos)
+- [www.analyticsvidhya.com](https://www.analyticsvidhya.com/?p=44939)
+- [robohub.org](https://robohub.org/?p=102710)
+- [bdd100k a large scale diverse driving video database](https://robohub.org/bdd100k-a-large-scale-diverse-driving-video-database)
+- [BDD100K Dataset](https://medium.com/@karol_majek/bdd100k-dataset-25e83e09ebf8)
+
+Powered by Claude Exporter (https://www.ai-chat-exporter.net)
